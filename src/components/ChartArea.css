@@ -1,0 +1,23 @@
+.chartarea {
+  /* background-color: antiquewhite; */
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chartNavBar {
+  width: 100%;
+  height: 50px;
+  /* background-color: yellowgreen; */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.chart {
+  width: 100%;
+  min-height: calc(100% - 50px);
+  /* background-color: aqua; */
+}
+.shareBtn {
+  margin-left: auto;
+}

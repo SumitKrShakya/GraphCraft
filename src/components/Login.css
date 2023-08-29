@@ -1,0 +1,39 @@
+.body {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(222, 222, 222, 0.5);
+}
+
+.box {
+  min-height: 500px;
+  min-width: 500px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 20px;
+  padding: 30px 10px;
+  background-color: white;
+}
+
+.logo {
+  height: 150px;
+  text-align: center;
+  margin: auto;
+  display: block;
+}
+input,
+label {
+  display: block;
+}
+.inputbox {
+  margin: 15px auto;
+  width: 75%;
+}
+.inputbox > input {
+  padding: 8px 10px;
+  border: 2px solid #dedede;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 1rem;
+}

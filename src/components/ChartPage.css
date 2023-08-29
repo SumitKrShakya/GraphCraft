@@ -1,0 +1,5 @@
+.page {
+  min-height: calc(100vh - 45px);
+  width: 100vw;
+  display: flex;
+}

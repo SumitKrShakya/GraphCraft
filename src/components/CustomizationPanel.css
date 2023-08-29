@@ -1,0 +1,24 @@
+.customizationPanel {
+  /* background-color: aquamarine; */
+  border-right: 2px dashed lightgray;
+  position: relative;
+  transition: all 0.5s ease-in-out;
+}
+
+.absolute_side {
+  position: absolute;
+  width: 18vw;
+  right: 5%;
+}
+
+.customizationPanel > .heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 300;
+  width: 100%;
+}
+h4 > svg {
+  float: right;
+  cursor: pointer;
+}
