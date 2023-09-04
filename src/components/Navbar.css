@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Russo+One&display=swap");
+
 .navbar {
   height: 45px;
   width: 100%;
@@ -7,7 +9,7 @@
 }
 
 .navbar > div {
-  max-width: 1200px;
+  /* max-width: 1200px; */
   width: 100%;
   background-color: white;
   height: 100%;
@@ -32,4 +34,12 @@
   color: white;
   font-weight: 600;
   font-size: 1.5rem;
+}
+
+.logoName {
+  font-family: "Russo One", sans-serif;
+  font-size: 1.3rem;
+  background: -webkit-linear-gradient(45deg, #6b20cf, #75bdf8 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

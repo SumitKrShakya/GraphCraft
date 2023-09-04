@@ -4,6 +4,9 @@ import { BsBoxArrowLeft } from "react-icons/bs";
 import { Collapse, Input, Select, Space } from "antd";
 import userContext from "../context/userContext";
 import BarChartCustomization from "./CustomizationTypes/BarChartCustomization";
+import LineChartCustomization from "./CustomizationTypes/LineChartCustomization";
+import AreaChartCustomization from "./CustomizationTypes/AreaChartCustomization";
+import PieChartCustomization from "./CustomizationTypes/PieChartCustomization";
 
 const CustomizationPanel = () => {
   const { data, chartType, hideCustomization, setHideCustomization } =
@@ -33,9 +36,26 @@ const CustomizationPanel = () => {
           />
         </h4>
         {/* <Collapse size="small" onChange={onChange} items={items} /> */}
-        <div>
+        <div
+          style={{
+            height: "86vh",
+            overflow: "auto",
+            paddingBottom: "5px",
+            // paddingRight: "10px",
+          }}
+        >
           {data && (
-            <>{chartType === "bar" ? <BarChartCustomization /> : null}</>
+            <>
+              {chartType === "bar" ? (
+                <BarChartCustomization />
+              ) : chartType === "line" ? (
+                <LineChartCustomization />
+              ) : chartType === "area" ? (
+                <AreaChartCustomization />
+              ) : chartType === "pie" ? (
+                <PieChartCustomization />
+              ) : null}
+            </>
           )}
         </div>
       </div>

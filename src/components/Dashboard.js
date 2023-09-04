@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { MdAddchart } from "react-icons/md";
 import Navbar from "./Navbar";
 import "./Dashboard.css";
@@ -17,6 +17,7 @@ import {
 import { UploadOutlined } from "@ant-design/icons";
 import handleCSVInputChange from "./CsvToJson";
 import { useNavigate } from "react-router-dom";
+import userContext from "../context/userContext";
 
 const { Meta } = AntdCard;
 
@@ -24,6 +25,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const { chartId, setChartId } = useContext(userContext);
   useEffect(() => {
     const call = async () => {
       const response = await axios.post(
@@ -56,6 +58,8 @@ const Dashboard = () => {
     );
     const res = response.data;
     if (res.success) {
+      console.log("chartID", chartId);
+      setChartId(res.chart._id);
       navigate(`/chart/${res.chart._id}`);
     } else {
       console.log("some error ocured");

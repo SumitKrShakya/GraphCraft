@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import "./ChartArea.css";
 import { Button, Input, Popover, QRCode, Select } from "antd";
 import { AiOutlineCopy } from "react-icons/ai";
@@ -16,52 +16,21 @@ import {
 import userContext from "../context/userContext";
 import BarChartComponent from "./ChartsTypes/BarChartComponent";
 import { BsBoxArrowRight } from "react-icons/bs";
+import LineChartComponent from "./ChartsTypes/LineChartComponent";
+import AreaChartComponent from "./ChartsTypes/AreaChartComponent";
+import PieChartComponent from "./ChartsTypes/PieChartComponent";
+import ReactToPrint from "react-to-print";
 
 const ChartArea = () => {
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  const {
+    data,
+    chartType,
+    setChartType,
+    hideCustomization,
+    setHideCustomization,
+  } = useContext(userContext);
 
-  // const data = [
-  //   {
-  //     name: "Page A",
-  //     uv: 4000,
-  //     pv: 2400,
-  //   },
-  //   {
-  //     name: "Page B",
-  //     uv: 3000,
-  //     pv: 1398,
-  //   },
-  //   {
-  //     name: "Page C",
-  //     uv: 2000,
-  //     pv: 9800,
-  //   },
-  //   {
-  //     name: "Page D",
-  //     uv: 2780,
-  //     pv: 3908,
-  //   },
-  //   {
-  //     name: "Page E",
-  //     uv: 1890,
-  //     pv: 4800,
-  //   },
-  //   {
-  //     name: "Page F",
-  //     uv: 2390,
-  //     pv: 3800,
-  //   },
-  //   {
-  //     name: "Page G",
-  //     uv: 3490,
-  //     pv: 4300,
-  //   },
-  // ];
-  const { data, chartType, hideCustomization, setHideCustomization } =
-    useContext(userContext);
-  console.log(chartType === "bar");
+  const printContent = useRef();
 
   return (
     <div
@@ -85,11 +54,11 @@ const ChartArea = () => {
         </div>
         <Input placeholder="Untitled Chart" style={{ width: 200 }} />
         <Select
-          defaultValue="bar"
+          value={chartType}
           style={{
             width: 120,
           }}
-          onChange={handleChange}
+          onChange={(e) => setChartType(e)}
           options={[
             {
               value: "bar",
@@ -109,6 +78,13 @@ const ChartArea = () => {
             },
           ]}
         />
+        <ReactToPrint
+          trigger={() => <Button className="printBtn">Print</Button>}
+          content={() => {
+            console.log(printContent);
+            return printContent.current;
+          }}
+        />
         <Popover
           placement="bottomRight"
           overlayInnerStyle={{
@@ -125,20 +101,22 @@ const ChartArea = () => {
                   padding: "5px",
                 }}
               >
-                <Input
+                {/* <Input
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.href);
                   }}
                   value={window.location.href}
                   style={{ cursor: "copy", width: "100px" }}
                   disabled
-                />
+                /> */}
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.href);
                   }}
                   type="primary"
+                  className="copyBtn"
                 >
+                  Copy Link
                   <AiOutlineCopy style={{ fontSize: "1.3rem" }} />
                 </Button>
               </div>
@@ -153,8 +131,20 @@ const ChartArea = () => {
           <Button className="shareBtn">Share</Button>
         </Popover>
       </div>
-      <div className="chart">
-        {data && <>{chartType === "bar" ? <BarChartComponent /> : null}</>}
+      <div ref={printContent} className="chart">
+        {data && (
+          <>
+            {chartType === "bar" ? (
+              <BarChartComponent />
+            ) : chartType === "line" ? (
+              <LineChartComponent />
+            ) : chartType === "area" ? (
+              <AreaChartComponent />
+            ) : chartType === "pie" ? (
+              <PieChartComponent />
+            ) : null}
+          </>
+        )}
       </div>
     </div>
   );

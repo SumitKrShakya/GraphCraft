@@ -13,7 +13,7 @@ import {
 import userContext from "../../context/userContext";
 import { createNumberStringNames } from "../Helper/CommonHelper";
 
-const BarChartCustomization = () => {
+const PieChartCustomization = () => {
   const { data, customization, setCustomization } = useContext(userContext);
   const [optionsYaxis, setOptionsYaxis] = useState([]);
   const [optionsXaxis, setOptionsXaxis] = useState([]);
@@ -30,17 +30,17 @@ const BarChartCustomization = () => {
   };
 
   const handleChangeBars = (value, b) => {
-    // console.log(`selected bar ${value}`, value);
+    console.log(`selected line ${value}`, value, customization?.pie?.length);
 
-    if (customization?.bars?.length === 0) {
+    if (customization?.pie?.length === 0 || !customization?.pie?.length) {
       setCustomization((prev) => ({
         ...prev,
-        bars: [
+        pie: [
           ...value.map((e) => ({
             keyName: e,
-            fill: "#8884d8",
+            fill: "rgba(136.00884,132.010032,215.98499999999999,0.5)",
             stroke: "#8884d8",
-            strokeWidth: 0,
+            strokeWidth: 1,
           })),
         ],
       }));
@@ -49,7 +49,7 @@ const BarChartCustomization = () => {
     }
 
     const updatedArr = value.map((name) => {
-      const existingVendor = customization?.bars.find(
+      const existingVendor = customization?.pie.find(
         (vendor) => vendor.keyName === name
       );
       if (existingVendor) {
@@ -57,22 +57,22 @@ const BarChartCustomization = () => {
       } else {
         return {
           keyName: name,
-          fill: "#8884d8",
+          fill: "rgba(136.00884,132.010032,215.98499999999999,0.5)",
           stroke: "#8884d8",
-          strokeWidth: 0,
+          strokeWidth: 1,
         };
       }
     });
 
-    // console.log("updatedArr>", updatedArr, customization);
+    console.log("updatedArr>", updatedArr, customization);
     setCustomization((prev) => ({
       ...prev,
-      bars: updatedArr,
+      pie: updatedArr,
     }));
   };
 
   const handleBarPropertyChange = (color, index, property) => {
-    const update = customization?.bars?.map((item, i) => {
+    const update = customization?.pie?.map((item, i) => {
       if (index == i) {
         item[
           property
@@ -82,12 +82,12 @@ const BarChartCustomization = () => {
     });
     setCustomization((prev) => ({
       ...prev,
-      bars: update,
+      pie: update,
     }));
   };
 
   const handleStrokeWidthChange = (value, index) => {
-    const update = customization?.bars?.map((item, i) => {
+    const update = customization?.pie?.map((item, i) => {
       if (index == i) {
         item.strokeWidth = value;
       }
@@ -95,7 +95,7 @@ const BarChartCustomization = () => {
     });
     setCustomization((prev) => ({
       ...prev,
-      bars: update,
+      pie: update,
     }));
   };
 
@@ -126,17 +126,17 @@ const BarChartCustomization = () => {
       children: (
         <>
           {/* <Space.Compact style={{ marginBottom: "10px", width: "100%" }}>
-            <Input style={{ width: "25%", cursor: "default" }} value="Y-Axis" />
-            <Select
-              allowClear
-              style={{
-                width: "75%",
-              }}
-              placeholder="Please select"
-              onChange={(e) => handleChange(e, "yaxis")}
-              options={optionsYaxis}
-            />
-          </Space.Compact> */}
+                <Input style={{ width: "25%", cursor: "default" }} value="Y-Axis" />
+                <Select
+                  allowClear
+                  style={{
+                    width: "75%",
+                  }}
+                  placeholder="Please select"
+                  onChange={(e) => handleChange(e, "yaxis")}
+                  options={optionsYaxis}
+                />
+              </Space.Compact> */}
           <Space.Compact style={{ marginBottom: "10px", width: "100%" }}>
             <Input
               style={{ width: "25%", cursor: "default" }}
@@ -163,7 +163,7 @@ const BarChartCustomization = () => {
               style={{
                 width: "75%",
               }}
-              value={customization?.bars?.map((item, i) => item.keyName)}
+              value={customization?.pie?.map((item, i) => item.keyName)}
               placeholder="Please select"
               onChange={handleChangeBars}
               options={optionsBars}
@@ -182,7 +182,7 @@ const BarChartCustomization = () => {
     },
     {
       key: "2",
-      label: "Bar Chart Color",
+      label: "Line Chart Color",
       children: (
         <div
           style={{
@@ -191,44 +191,40 @@ const BarChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `3fr ${
-              customization?.bars?.length > 0 ? "1fr 1fr 1fr" : ""
+              customization?.pie?.length > 0 ? "1fr 1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.bars?.length == 0 ? (
-            <span>Please select atleast one bar to customize its color.</span>
+          {customization?.pie?.length == 0 ? (
+            <span>Please select atleast one Pie to customize its color.</span>
           ) : (
             <>
-              <strong>Bar</strong>
+              <strong>Pie</strong>
               <strong>Color</strong>
               <strong>Stroke</strong>
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.bars?.map((item, i) => {
+          {customization?.pie?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   // showText
                   style={{ width: 0 }}
-                  value={customization.bars[i].fill}
-                  // onChangeComplete={(e) =>
-                  //   handleBarPropertyChange(e, i, "fill")
-                  // }
+                  value={customization.pie[i].fill}
                   onChange={(e) => handleBarPropertyChange(e, i, "fill")}
                 />
                 <ColorPicker
-                  // showText
                   style={{ width: 0 }}
-                  value={customization.bars[i].stroke}
+                  value={customization.pie[i].stroke}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
                 />
                 <InputNumber
                   style={{ width: 50 }}
                   min={0}
                   max={10}
-                  value={customization.bars[i].strokeWidth}
+                  value={customization.pie[i].strokeWidth}
                   onChange={(e) => handleStrokeWidthChange(e, i)}
                 />
               </>
@@ -401,6 +397,100 @@ const BarChartCustomization = () => {
         </div>
       ),
     },
+    {
+      key: "4",
+      label: "Dots in pie",
+      children: (
+        <div
+          style={{
+            display: "grid",
+            gap: "1rem",
+            justifyContent: "center",
+            alignItems: "center",
+            gridTemplateColumns: `2fr ${
+              customization?.pie?.length > 0 ? "1fr 1fr" : ""
+            }`,
+          }}
+        >
+          {customization?.pie?.length == 0 ? (
+            <span>Please select atleast one Line to customize its color.</span>
+          ) : (
+            <>
+              <strong>Line</strong>
+              {/* <strong>Color</strong> */}
+              <strong>Stroke</strong>
+              <strong>Stroke Width</strong>
+            </>
+          )}
+          {customization?.pie?.map((item, i) => {
+            return (
+              <>
+                <label>{item.keyName}</label>
+                <ColorPicker
+                  style={{ width: 0 }}
+                  value={customization.pie[i].stroke}
+                  onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
+                />
+                <InputNumber
+                  style={{ width: 50 }}
+                  min={0}
+                  max={10}
+                  value={customization.pie[i].strokeWidth}
+                  onChange={(e) => handleStrokeWidthChange(e, i)}
+                />
+              </>
+            );
+          })}
+        </div>
+      ),
+    },
+    {
+      key: "5",
+      label: "Active Dots in pie",
+      children: (
+        <div
+          style={{
+            display: "grid",
+            gap: "1rem",
+            justifyContent: "center",
+            alignItems: "center",
+            gridTemplateColumns: `2fr ${
+              customization?.pie?.length > 0 ? "1fr 1fr" : ""
+            }`,
+          }}
+        >
+          {customization?.pie?.length == 0 ? (
+            <span>Please select atleast one Line to customize its color.</span>
+          ) : (
+            <>
+              <strong>Line</strong>
+              {/* <strong>Color</strong> */}
+              <strong>Stroke</strong>
+              <strong>Stroke Width</strong>
+            </>
+          )}
+          {customization?.pie?.map((item, i) => {
+            return (
+              <>
+                <label>{item.keyName}</label>
+                <ColorPicker
+                  style={{ width: 0 }}
+                  value={customization.pie[i].stroke}
+                  onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
+                />
+                <InputNumber
+                  style={{ width: 50 }}
+                  min={0}
+                  max={10}
+                  value={customization.pie[i].strokeWidth}
+                  onChange={(e) => handleStrokeWidthChange(e, i)}
+                />
+              </>
+            );
+          })}
+        </div>
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -439,4 +529,4 @@ const BarChartCustomization = () => {
   );
 };
 
-export default BarChartCustomization;
+export default PieChartCustomization;
