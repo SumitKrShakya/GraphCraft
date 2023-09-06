@@ -6,7 +6,6 @@ import { useParams } from "react-router-dom";
 const UserState = (props) => {
   const [data, setData] = useState(null);
   const [customization, setCustomization] = useState({
-    //! BARS
     bars: [],
     lines: [],
     numberNames: [],
@@ -25,11 +24,12 @@ const UserState = (props) => {
     },
     brush: {
       startIndex: 0,
-      endIndex: data?.length - 1,
+      endIndex: data?.length - 1 === NaN ? data?.length - 1 : 10,
       stroke: "#8884d8",
     },
   });
-  const [chartType, setChartType] = useState("");
+  const [chartName, setChartName] = useState("");
+  const [chartType, setChartType] = useState("bar");
   const [hideCustomization, setHideCustomization] = useState(false);
   const [chartId, setChartId] = useState(null);
   const [updating, setUpdating] = useState(0);
@@ -44,7 +44,13 @@ const UserState = (props) => {
       cancelToken = axios.CancelToken.source();
       try {
         setUpdating((prev) => prev + 1);
-        console.log(chartId);
+        console.log(chartId, customization, {
+          token: localStorage.getItem("jwt"),
+          chartId,
+          customization,
+          chartType,
+          hideCustomization,
+        });
         const response = await axios.post(
           `${process.env.REACT_APP_SERVER_URL}/chart/update`,
           {
@@ -53,6 +59,7 @@ const UserState = (props) => {
             customization,
             chartType,
             hideCustomization,
+            chartName,
           },
           {
             cancelToken: cancelToken.token,
@@ -71,7 +78,7 @@ const UserState = (props) => {
     if (chartId) {
       call();
     }
-  }, [customization, chartType, hideCustomization, chartId]);
+  }, [customization, chartType, hideCustomization, chartId, chartName]);
 
   return (
     <UserContext.Provider
@@ -88,6 +95,8 @@ const UserState = (props) => {
         setChartId,
         updating,
         setUpdating,
+        chartName,
+        setChartName,
       }}
     >
       {props.children}

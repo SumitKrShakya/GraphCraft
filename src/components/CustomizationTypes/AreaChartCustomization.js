@@ -364,7 +364,7 @@ const AreaChartCustomization = () => {
                   : "rgb(100,100,100)",
               }}
             >
-              Border Radius
+              Border Type
             </span>
             <Select
               disabled={!customization.tooltip.visible}

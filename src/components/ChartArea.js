@@ -28,6 +28,8 @@ const ChartArea = () => {
     setChartType,
     hideCustomization,
     setHideCustomization,
+    chartName,
+    setChartName,
   } = useContext(userContext);
 
   const printContent = useRef();
@@ -52,7 +54,21 @@ const ChartArea = () => {
             onClick={() => setHideCustomization(!hideCustomization)}
           />
         </div>
-        <Input placeholder="Untitled Chart" style={{ width: 200 }} />
+        <Input
+          placeholder="Untitled Chart"
+          onChange={(e) => {
+            window.document.title =
+              e.target.value === "" ? "Untitled Chart" : e.target.value;
+            setChartName(e.target.value);
+          }}
+          value={chartName}
+          style={{
+            width: 200,
+            fontWeight: chartName === "" ? "" : "bold",
+            fontSize: chartName === "" ? "" : "1.2rem",
+          }}
+          bordered={chartName === "" ? true : false}
+        />
         <Select
           value={chartType}
           style={{

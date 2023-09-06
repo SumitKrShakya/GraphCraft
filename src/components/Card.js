@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import "./Card.css";
 import { BsBarChart } from "react-icons/bs";
 import { Card as AntdCard, Button, Modal } from "antd";
+import { useNavigate } from "react-router-dom";
 const { Meta } = AntdCard;
 
 const Card = ({ chart }) => {
+  const navigate = useNavigate();
+
   const timestamp = chart.createdAt;
   let date = new Date(timestamp);
 
@@ -28,6 +31,9 @@ const Card = ({ chart }) => {
       <AntdCard
         className="card"
         hoverable
+        onClick={() => {
+          navigate(`/chart/${chart._id}`);
+        }}
         cover={
           <img
             style={{
@@ -40,7 +46,10 @@ const Card = ({ chart }) => {
           />
         }
       >
-        <Meta title={chart.name} description={`${formattedDate}`} />
+        <Meta
+          title={chart.name === "" ? "Untitled Chart" : chart.name}
+          description={`${formattedDate}`}
+        />
       </AntdCard>
     </>
   );

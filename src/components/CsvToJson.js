@@ -34,6 +34,7 @@ const handleCSVInputChange = (event, setJsonData, setDataHeadings) => {
     const csvData = e.target.result;
     console.log(csvData);
     const jsonData = convertCSVToJson(csvData, setJsonData, setDataHeadings);
+    console.log(jsonData);
     setJsonData(jsonData);
   };
 

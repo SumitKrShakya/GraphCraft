@@ -216,6 +216,7 @@ const BarChartCustomization = () => {
                   // onChangeComplete={(e) =>
                   //   handleBarPropertyChange(e, i, "fill")
                   // }
+                  onOpenChange={(e) => console.log("tto_>", e)}
                   onChange={(e) => handleBarPropertyChange(e, i, "fill")}
                 />
                 <ColorPicker
@@ -368,7 +369,7 @@ const BarChartCustomization = () => {
                   : "rgb(100,100,100)",
               }}
             >
-              Border Radius
+              Border Type
             </span>
             <Select
               disabled={!customization.tooltip.visible}
