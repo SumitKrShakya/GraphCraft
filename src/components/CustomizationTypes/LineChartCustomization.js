@@ -11,45 +11,96 @@ import {
   Switch,
 } from "antd";
 import userContext from "../../context/userContext";
-import { createNumberStringNames } from "../Helper/CommonHelper";
+import { createNumberStringNames, update } from "../Helper/CommonHelper";
 
 const LineChartCustomization = () => {
-  const { data, customization, setCustomization } = useContext(userContext);
+  const { data, graph, setGraph, setUpdating } = useContext(userContext);
   const [optionsYaxis, setOptionsYaxis] = useState([]);
   const [optionsXaxis, setOptionsXaxis] = useState([]);
   const [optionsBars, setOptionsBars] = useState([]);
+  console.log("graph.line>", graph);
 
   const text = `A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.`;
 
   const handleChange = (value, axis) => {
-    // console.log(`selected ${value}`, typeof value);
-    setCustomization((prev) => ({
+    console.log(`selected ${value}`, typeof value);
+    setGraph((prev) => ({
       ...prev,
-      [axis]: value,
+      line: {
+        ...prev.line,
+        [axis]: value,
+      },
     }));
+    update(
+      {
+        ...graph,
+        line: {
+          ...graph.line,
+          [axis]: value,
+        },
+      },
+      setUpdating
+    );
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   [axis]: value,
+    // }));
   };
 
   const handleChangeBars = (value, b) => {
-    console.log(`selected line ${value}`, value, customization?.lines?.length);
+    console.log(`selected line ${value}`, value, graph.line?.lines?.length);
 
-    if (customization?.lines?.length === 0 || !customization?.lines?.length) {
-      setCustomization((prev) => ({
+    if (graph.line?.lines?.length === 0 || !graph.line?.lines?.length) {
+      setGraph((prev) => ({
         ...prev,
-        lines: [
-          ...value.map((e) => ({
-            keyName: e,
-            fill: "#8884d8",
-            stroke: "#8884d8",
-            strokeWidth: 1,
-          })),
-        ],
+        line: {
+          ...prev.line,
+          lines: [
+            ...value.map((e) => ({
+              keyName: e,
+              fill: "#8884d8",
+              stroke: "#8884d8",
+              strokeWidth: 1,
+            })),
+          ],
+        },
       }));
-      // console.log("customization_", customization);
+      update(
+        {
+          ...graph,
+          line: {
+            ...graph.line,
+            lines: [
+              ...value.map((e) => ({
+                keyName: e,
+                fill: "#8884d8",
+
+                stroke: "#8884d8",
+                strokeWidth: 1,
+              })),
+            ],
+          },
+        },
+        setUpdating
+      );
+
+      // setCustomization((prev) => ({
+      //   ...prev,
+      //   lines: [
+      //     ...value.map((e) => ({
+      //       keyName: e,
+      //       fill: "#8884d8",
+      //       stroke: "#8884d8",
+      //       strokeWidth: 1,
+      //     })),
+      //   ],
+      // }));
+      // console.log("customization_", graph.line);
       return;
     }
 
     const updatedArr = value.map((name) => {
-      const existingVendor = customization?.lines.find(
+      const existingVendor = graph.line?.lines.find(
         (vendor) => vendor.keyName === name
       );
       if (existingVendor) {
@@ -64,15 +115,34 @@ const LineChartCustomization = () => {
       }
     });
 
-    console.log("updatedArr>", updatedArr, customization);
-    setCustomization((prev) => ({
+    console.log("updatedArr>", updatedArr, graph.line);
+    setGraph((prev) => ({
       ...prev,
-      lines: updatedArr,
+      line: {
+        ...prev.line,
+        lines: updatedArr,
+      },
     }));
+
+    update(
+      {
+        ...graph,
+        line: {
+          ...graph.line,
+          lines: updatedArr,
+        },
+      },
+      setUpdating
+    );
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   lines: updatedArr,
+    // }));
   };
 
   const handleBarPropertyChange = (color, index, property) => {
-    const update = customization?.lines?.map((item, i) => {
+    const update = graph.line?.lines?.map((item, i) => {
       if (index == i) {
         item[
           property
@@ -80,43 +150,103 @@ const LineChartCustomization = () => {
       }
       return item;
     });
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      lines: update,
+      line: {
+        ...prev.line,
+        lines: update,
+      },
     }));
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   lines: update,
+    // }));
   };
 
   const handleStrokeWidthChange = (value, index) => {
-    const update = customization?.lines?.map((item, i) => {
+    const newUpdate = graph.line?.lines?.map((item, i) => {
       if (index == i) {
         item.strokeWidth = value;
       }
       return item;
     });
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      lines: update,
+      line: {
+        ...prev.line,
+        lines: newUpdate,
+      },
     }));
+    update(
+      {
+        ...graph,
+        line: {
+          ...graph.line,
+          lines: newUpdate,
+        },
+      },
+      setUpdating
+    );
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   lines: update,
+    // }));
   };
 
   const handleTooltipChange = (color, property) => {
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      tooltip: {
-        ...prev.tooltip,
-        [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+      line: {
+        ...prev.line,
+        tooltip: {
+          ...prev.line.tooltip,
+          [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+        },
       },
     }));
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   tooltip: {
+    //     ...prev.tooltip,
+    //     [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+    //   },
+    // }));
   };
 
   const handleTooltipNumberChange = (value, property) => {
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      tooltip: {
-        ...prev.tooltip,
-        [property]: value,
+      line: {
+        ...prev.line,
+        tooltip: {
+          ...prev.line.tooltip,
+          [property]: value,
+        },
       },
     }));
+
+    update(
+      {
+        ...graph,
+        line: {
+          ...graph.line,
+          tooltip: {
+            ...graph.line.tooltip,
+            [property]: value,
+          },
+        },
+      },
+      setUpdating
+    );
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   tooltip: {
+    //     ...prev.tooltip,
+    //     [property]: value,
+    //   },
+    // }));
   };
 
   const itemsNest = [
@@ -149,6 +279,7 @@ const LineChartCustomization = () => {
               }}
               placeholder="Please select"
               onChange={(e) => handleChange(e, "xaxis")}
+              value={graph.line?.xaxis}
               options={optionsXaxis}
             />
           </Space.Compact>
@@ -163,7 +294,7 @@ const LineChartCustomization = () => {
               style={{
                 width: "75%",
               }}
-              value={customization?.lines?.map((item, i) => item.keyName)}
+              value={graph.line?.lines?.map((item, i) => item.keyName)}
               placeholder="Please select"
               onChange={handleChangeBars}
               options={optionsBars}
@@ -191,11 +322,11 @@ const LineChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `2fr ${
-              customization?.lines?.length > 0 ? "1fr 1fr" : ""
+              graph.line?.lines?.length > 0 ? "1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.lines?.length == 0 ? (
+          {graph.line?.lines?.length == 0 ? (
             <span>Please select atleast one Line to customize its color.</span>
           ) : (
             <>
@@ -205,20 +336,25 @@ const LineChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.lines?.map((item, i) => {
+          {graph.line?.lines?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   style={{ width: 0 }}
-                  value={customization.lines[i].stroke}
+                  value={graph.line.lines[i].stroke}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
                 />
                 <InputNumber
                   style={{ width: 50 }}
                   min={0}
                   max={10}
-                  value={customization.lines[i]?.strokeWidth}
+                  value={graph.line.lines[i]?.strokeWidth}
                   onChange={(e) => handleStrokeWidthChange(e, i)}
                 />
               </>
@@ -241,18 +377,46 @@ const LineChartCustomization = () => {
           >
             <strong>Tooltip Visible </strong>
             <Switch
-              onClick={() =>
-                setCustomization((prev) => {
-                  return {
-                    ...prev,
-                    tooltip: {
-                      ...prev.tooltip,
-                      visible: !prev.tooltip.visible,
+              onClick={
+                () => {
+                  setGraph((prev) => {
+                    return {
+                      ...prev,
+                      line: {
+                        ...prev.line,
+                        tooltip: {
+                          ...prev.line.tooltip,
+                          visible: !prev.line.tooltip.visible,
+                        },
+                      },
+                    };
+                  });
+                  update(
+                    {
+                      ...graph,
+                      line: {
+                        ...graph.line,
+                        tooltip: {
+                          ...graph.line.tooltip,
+                          visible: !graph.line.tooltip.visible,
+                        },
+                      },
                     },
-                  };
-                })
+                    setUpdating
+                  );
+                }
+
+                // setCustomization((prev) => {
+                //   return {
+                //     ...prev,
+                //     tooltip: {
+                //       ...prev.tooltip,
+                //       visible: !prev.tooltip.visible,
+                //     },
+                //   };
+                // })
               }
-              defaultChecked={customization.tooltip.visible}
+              defaultChecked={graph.line.tooltip.visible}
               checkedChildren="On"
               unCheckedChildren="Off"
             />
@@ -270,7 +434,7 @@ const LineChartCustomization = () => {
           >
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.line.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -279,14 +443,19 @@ const LineChartCustomization = () => {
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.line.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.color}
+              value={graph.line?.tooltip?.color}
               onChange={(e) => handleTooltipChange(e, "color")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.line.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -295,14 +464,19 @@ const LineChartCustomization = () => {
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.line.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.backgroundColor}
+              value={graph.line?.tooltip?.backgroundColor}
               onChange={(e) => handleTooltipChange(e, "backgroundColor")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.line.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -311,14 +485,19 @@ const LineChartCustomization = () => {
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.line.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.borderColor}
+              value={graph.line?.tooltip?.borderColor}
               onChange={(e) => handleTooltipChange(e, "borderColor")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.line.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -326,17 +505,17 @@ const LineChartCustomization = () => {
               Border width
             </span>
             <InputNumber
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.line.tooltip.visible}
               style={{ width: 110 }}
               min={0}
               max={20}
-              value={customization?.tooltip?.borderWidth}
+              value={graph.line?.tooltip?.borderWidth}
               onChange={(e) => handleTooltipNumberChange(e, "borderWidth")}
             />
 
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.line.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -344,16 +523,16 @@ const LineChartCustomization = () => {
               Border Radius
             </span>
             <InputNumber
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.line.tooltip.visible}
               style={{ width: 110 }}
               min={0}
-              value={customization?.tooltip?.borderRadius}
+              value={graph.line?.tooltip?.borderRadius}
               onChange={(e) => handleTooltipNumberChange(e, "borderRadius")}
             />
 
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.line.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -361,10 +540,10 @@ const LineChartCustomization = () => {
               Border Type
             </span>
             <Select
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.line.tooltip.visible}
               style={{ width: 110 }}
               min={0}
-              value={customization?.tooltip?.borderStyle}
+              value={graph.line?.tooltip?.borderStyle}
               options={[
                 { value: "dotted", label: "Dotted" },
                 { value: "dashed", label: "Dashed" },
@@ -378,13 +557,36 @@ const LineChartCustomization = () => {
                 { value: "hidden", label: "Hidden" },
               ]}
               onChange={(e) => {
-                setCustomization((prev) => ({
+                setGraph((prev) => ({
                   ...prev,
-                  tooltip: {
-                    ...prev.tooltip,
-                    borderStyle: e,
+                  line: {
+                    ...prev.line,
+                    tooltip: {
+                      ...prev.line.tooltip,
+                      borderStyle: e,
+                    },
                   },
                 }));
+                update(
+                  {
+                    ...graph,
+                    line: {
+                      ...graph.line,
+                      tooltip: {
+                        ...graph.line.tooltip,
+                        borderStyle: e,
+                      },
+                    },
+                  },
+                  setUpdating
+                );
+                // setCustomization((prev) => ({
+                //   ...prev,
+                //   tooltip: {
+                //     ...prev.tooltip,
+                //     borderStyle: e,
+                //   },
+                // }));
               }}
             />
           </div>
@@ -402,11 +604,11 @@ const LineChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `2fr ${
-              customization?.lines?.length > 0 ? "1fr 1fr" : ""
+              graph.line?.lines?.length > 0 ? "1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.lines?.length == 0 ? (
+          {graph.line?.lines?.length == 0 ? (
             <span>Please select atleast one Line to customize its color.</span>
           ) : (
             <>
@@ -416,14 +618,19 @@ const LineChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.lines?.map((item, i) => {
+          {graph.line?.lines?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   style={{ width: 0 }}
-                  value={customization.lines[i].stroke}
+                  value={graph.line.lines[i].stroke}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                 />
                 <InputNumber
                   style={{ width: 50 }}
@@ -449,11 +656,11 @@ const LineChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `2fr ${
-              customization?.lines?.length > 0 ? "1fr 1fr" : ""
+              graph.line?.lines?.length > 0 ? "1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.lines?.length == 0 ? (
+          {graph.line?.lines?.length == 0 ? (
             <span>Please select atleast one Line to customize its color.</span>
           ) : (
             <>
@@ -463,14 +670,19 @@ const LineChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.lines?.map((item, i) => {
+          {graph.line?.lines?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   style={{ width: 0 }}
-                  value={customization.lines[i].stroke}
+                  value={graph.line.lines[i].stroke}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                 />
                 <InputNumber
                   style={{ width: 50 }}
@@ -489,13 +701,13 @@ const LineChartCustomization = () => {
 
   useEffect(() => {
     // console.log("data>", data);
-    createNumberStringNames(data, customization, setCustomization);
+    createNumberStringNames(data, graph.line, setGraph);
   }, []);
 
   useEffect(() => {
     const newOptionsXYaxis = [];
-    // console.log("customization>", customization);
-    customization?.dataNames.forEach((e) => {
+    // console.log("graph.line>", graph.line);
+    graph.dataNames.forEach((e) => {
       newOptionsXYaxis.push({
         label: e,
         value: e,
@@ -505,20 +717,18 @@ const LineChartCustomization = () => {
     setOptionsYaxis(newOptionsXYaxis);
     setOptionsXaxis(newOptionsXYaxis);
     const newOptionsBars = [];
-    customization?.numberNames.forEach((e) => {
+    graph.numberNames.forEach((e) => {
       newOptionsBars.push({
         label: e,
         value: e,
       });
     });
     setOptionsBars(newOptionsBars);
-  }, [customization]);
+  }, [graph.line]);
 
   return (
     <div>
-      {customization?.dataNames && (
-        <Collapse size="small" items={BarCustomization} />
-      )}
+      {graph?.dataNames && <Collapse size="small" items={BarCustomization} />}
     </div>
   );
 };

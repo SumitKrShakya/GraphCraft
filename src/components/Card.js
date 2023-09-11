@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import "./Card.css";
 import { BsBarChart } from "react-icons/bs";
-import { Card as AntdCard, Button, Modal } from "antd";
+import { Card as AntdCard, Button, Dropdown, Modal } from "antd";
 import { useNavigate } from "react-router-dom";
+import {
+  DeleteOutlined,
+  ShareAltOutlined,
+  FolderOpenOutlined,
+} from "@ant-design/icons";
 const { Meta } = AntdCard;
 
-const Card = ({ chart }) => {
+const Card = ({ chart, graph }) => {
   const navigate = useNavigate();
+  console.log(chart);
 
   const timestamp = chart.createdAt;
   let date = new Date(timestamp);
@@ -25,32 +31,94 @@ const Card = ({ chart }) => {
   const formattedDate = `${day} ${month} ${year}, ${hours}:${minutes}`;
 
   // MODAL
+  const items = [
+    {
+      label: (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            minWidth: "100px",
+            fontSize: "1.2rem",
+            color: "blue",
+          }}
+        >
+          <FolderOpenOutlined style={{ transform: "translateY(3px)" }} />
+          <span>Open</span>
+        </div>
+      ),
+      key: "1",
+    },
+    {
+      label: (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            minWidth: "100px",
+            fontSize: "1.2rem",
+            color: "blue",
+          }}
+        >
+          <ShareAltOutlined style={{ transform: "translateY(3px)" }} />
+          <span>Share</span>
+        </div>
+      ),
+      key: "2",
+    },
+
+    {
+      label: (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            minWidth: "100px",
+            fontSize: "1.2rem",
+          }}
+        >
+          <DeleteOutlined style={{ transform: "translateY(3px)" }} />
+          <span>Delete</span>
+        </div>
+      ),
+      key: "3",
+      danger: true,
+    },
+  ];
 
   return (
     <>
-      <AntdCard
-        className="card"
-        hoverable
-        onClick={() => {
-          navigate(`/chart/${chart._id}`);
-        }}
-        cover={
-          <img
-            style={{
-              margin: "5%",
-              width: "90%",
-              boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
-            }}
-            alt="example"
-            src="https://play-lh.googleusercontent.com/AcmdHoyslp6AnrSMvDMg1o3tmhIuy0wbd8mN-usvDzhO4hiTHMLIavweYOPKmlpglrY"
+      <Dropdown menu={{ items }} trigger={["contextMenu"]}>
+        <AntdCard
+          className="card"
+          hoverable
+          onClick={() => {
+            navigate(`/chart/${chart._id}`);
+          }}
+          cover={
+            <img
+              style={{
+                margin: "5%",
+                width: "90%",
+                boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+              }}
+              alt="example"
+              src="https://play-lh.googleusercontent.com/AcmdHoyslp6AnrSMvDMg1o3tmhIuy0wbd8mN-usvDzhO4hiTHMLIavweYOPKmlpglrY"
+            />
+          }
+        >
+          <Meta
+            title={
+              chart.name === ""
+                ? "Untitled Chart"
+                : graph?.chartName
+                ? graph.chartName
+                : "Untitled Chart"
+            }
+            description={`${formattedDate}`}
           />
-        }
-      >
-        <Meta
-          title={chart.name === "" ? "Untitled Chart" : chart.name}
-          description={`${formattedDate}`}
-        />
-      </AntdCard>
+        </AntdCard>
+      </Dropdown>
     </>
   );
 };

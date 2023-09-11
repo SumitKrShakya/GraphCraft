@@ -12,12 +12,13 @@ import {
   ResponsiveContainer,
   Brush,
 } from "recharts";
+import { update } from "../Helper/CommonHelper";
 
 const BarChartComponent = () => {
-  const { data, customization, setCustomization } = useContext(userContext);
+  const { data, graph, setGraph, setUpdating } = useContext(userContext);
   let minimum = 0,
     maximum = 0;
-  customization.bars.map((item) => {
+  graph.bar.bars.map((item) => {
     data.map((e) => {
       // console.log("e", e[item.keyName]);
       maximum = Math.max(maximum, e[item.keyName]);
@@ -29,27 +30,27 @@ const BarChartComponent = () => {
     <ResponsiveContainer>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey={customization?.xaxis} />
+        <XAxis dataKey={graph.bar?.xaxis} />
         <YAxis
-          dataKey={customization?.yaxis}
+          dataKey={graph.bar?.yaxis}
           type="number"
           domain={[minimum, maximum]}
         />
-        {customization.tooltip.visible && (
+        {graph.bar.tooltip.visible && (
           <Tooltip
             contentStyle={{
-              color: customization?.tooltip?.color,
-              backgroundColor: customization?.tooltip?.backgroundColor,
-              borderColor: customization?.tooltip?.borderColor,
-              borderWidth: customization?.tooltip?.borderWidth,
-              borderRadius: customization?.tooltip?.borderRadius,
-              borderStyle: customization?.tooltip?.borderStyle,
+              color: graph.bar?.tooltip?.color,
+              backgroundColor: graph.bar?.tooltip?.backgroundColor,
+              borderColor: graph.bar?.tooltip?.borderColor,
+              borderWidth: graph.bar?.tooltip?.borderWidth,
+              borderRadius: graph.bar?.tooltip?.borderRadius,
+              borderStyle: graph.bar?.tooltip?.borderStyle,
             }}
           />
         )}
         <Legend />
-        {/* {console.log("customization>>", customization)} */}
-        {customization?.bars?.map((item, i) => {
+        {/* {console.log("graph.bar>>", graph.bar)} */}
+        {graph.bar?.bars?.map((item, i) => {
           return (
             <Bar
               dataKey={item.keyName}
@@ -65,20 +66,42 @@ const BarChartComponent = () => {
           height={30}
           onChange={(e) => {
             console.log(e);
-            setCustomization((prev) => {
+            if (
+              e.startIndex === graph.bar?.brush?.startIndex &&
+              e.endIndex === graph.bar?.brush?.endIndex
+            )
+              return;
+            setGraph((prev) => {
               return {
                 ...prev,
-                brush: {
-                  ...prev.brush,
-                  startIndex: e.startIndex,
-                  endIndex: e.endIndex,
+                bar: {
+                  ...prev.bar,
+                  brush: {
+                    ...prev.bar.brush,
+                    startIndex: e.startIndex,
+                    endIndex: e.endIndex,
+                  },
                 },
               };
             });
+            update(
+              {
+                ...graph,
+                bar: {
+                  ...graph.bar,
+                  brush: {
+                    ...graph.bar.brush,
+                    startIndex: e.startIndex,
+                    endIndex: e.endIndex,
+                  },
+                },
+              },
+              setUpdating
+            );
           }}
-          startIndex={customization?.brush?.startIndex}
-          endIndex={customization?.brush?.endIndex}
-          stroke={customization?.brush?.stroke}
+          startIndex={graph.bar?.brush?.startIndex}
+          endIndex={graph.bar?.brush?.endIndex}
+          stroke={graph.bar?.brush?.stroke}
         />
       </BarChart>
     </ResponsiveContainer>

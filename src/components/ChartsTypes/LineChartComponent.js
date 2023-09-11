@@ -16,10 +16,11 @@ import {
 } from "recharts";
 
 const LineChartComponent = () => {
-  const { data, customization, setCustomization } = useContext(userContext);
+  const { data, graph, setGraph } = useContext(userContext);
+  console.log("graph line", graph);
   let minimum = 0,
     maximum = 0;
-  customization.bars.map((item) => {
+  graph.line.lines.map((item) => {
     data.map((e) => {
       // console.log("e", e[item.keyName]);
       maximum = Math.max(maximum, e[item.keyName]);
@@ -27,85 +28,30 @@ const LineChartComponent = () => {
     });
   });
 
-  {
-    /* <BarChart data={data}>
-    <CartesianGrid strokeDasharray="3 3" />
-    <XAxis dataKey={customization?.xaxis} />
-    <YAxis
-      dataKey={customization?.yaxis}
-      type="number"
-      domain={[minimum, maximum]}
-    />
-    {customization.tooltip.visible && (
-      <Tooltip
-        contentStyle={{
-          color: customization?.tooltip?.color,
-          backgroundColor: customization?.tooltip?.backgroundColor,
-          borderColor: customization?.tooltip?.borderColor,
-          borderWidth: customization?.tooltip?.borderWidth,
-          borderRadius: customization?.tooltip?.borderRadius,
-          borderStyle: customization?.tooltip?.borderStyle,
-        }}
-      />
-    )}
-    <Legend />
-    {customization?.bars?.map((item, i) => {
-      return (
-        <Bar
-          dataKey={item.keyName}
-          // stackId={i % 2 ? "a" : "b"}
-          fill={item.fill}
-          stroke={item.stroke}
-          strokeWidth={item?.strokeWidth ? item.strokeWidth : 0}
-          // strokeDasharray={i % 2 ? "10 10" : "50 10"}
-        />
-      );
-    })}
-    <Brush
-      height={30}
-      onChange={(e) => {
-        console.log(e);
-        setCustomization((prev) => {
-          return {
-            ...prev,
-            brush: {
-              ...prev.brush,
-              startIndex: e.startIndex,
-              endIndex: e.endIndex,
-            },
-          };
-        });
-      }}
-      startIndex={customization?.brush?.startIndex}
-      endIndex={customization?.brush?.endIndex}
-      stroke={customization?.brush?.stroke}
-    />
-  </BarChart> */
-  }
   return (
     <ResponsiveContainer>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="5 5" />
-        <XAxis dataKey={customization?.xaxis} />
+        <XAxis dataKey={graph.line?.xaxis} />
         <YAxis
-          dataKey={customization?.yaxis}
+          dataKey={graph.line?.yaxis}
           type="number"
           domain={[minimum, maximum]}
         />
-        {customization.tooltip.visible && (
+        {graph.line?.tooltip?.visible && (
           <Tooltip
             contentStyle={{
-              color: customization?.tooltip?.color,
-              backgroundColor: customization?.tooltip?.backgroundColor,
-              borderColor: customization?.tooltip?.borderColor,
-              borderWidth: customization?.tooltip?.borderWidth,
-              borderRadius: customization?.tooltip?.borderRadius,
-              borderStyle: customization?.tooltip?.borderStyle,
+              color: graph.line?.tooltip?.color,
+              backgroundColor: graph.line?.tooltip?.backgroundColor,
+              borderColor: graph.line?.tooltip?.borderColor,
+              borderWidth: graph.line?.tooltip?.borderWidth,
+              borderRadius: graph.line?.tooltip?.borderRadius,
+              borderStyle: graph.line?.tooltip?.borderStyle,
             }}
           />
         )}
         <Legend />
-        {customization?.lines?.map((item, i) => {
+        {graph.line?.lines?.map((item, i) => {
           return (
             <Line
               type="monotone"
@@ -123,20 +69,23 @@ const LineChartComponent = () => {
           height={30}
           onChange={(e) => {
             console.log(e);
-            setCustomization((prev) => {
+            setGraph((prev) => {
               return {
                 ...prev,
-                brush: {
-                  ...prev.brush,
-                  startIndex: e.startIndex,
-                  endIndex: e.endIndex,
+                line: {
+                  ...prev.line,
+                  brush: {
+                    ...prev.brush,
+                    startIndex: e.startIndex,
+                    endIndex: e.endIndex,
+                  },
                 },
               };
             });
           }}
-          startIndex={customization?.brush?.startIndex}
-          endIndex={customization?.brush?.endIndex}
-          stroke={customization?.brush?.stroke}
+          startIndex={graph.line?.brush?.startIndex}
+          endIndex={graph.line?.brush?.endIndex}
+          stroke={graph.line?.brush?.stroke}
         />
       </LineChart>
     </ResponsiveContainer>

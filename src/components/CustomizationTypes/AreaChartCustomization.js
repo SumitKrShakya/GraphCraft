@@ -11,10 +11,10 @@ import {
   Switch,
 } from "antd";
 import userContext from "../../context/userContext";
-import { createNumberStringNames } from "../Helper/CommonHelper";
+import { createNumberStringNames, update } from "../Helper/CommonHelper";
 
 const AreaChartCustomization = () => {
-  const { data, customization, setCustomization } = useContext(userContext);
+  const { data, graph, setGraph, setUpdating } = useContext(userContext);
   const [optionsYaxis, setOptionsYaxis] = useState([]);
   const [optionsXaxis, setOptionsXaxis] = useState([]);
   const [optionsBars, setOptionsBars] = useState([]);
@@ -23,33 +23,81 @@ const AreaChartCustomization = () => {
 
   const handleChange = (value, axis) => {
     // console.log(`selected ${value}`, typeof value);
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      [axis]: value,
+      area: {
+        ...prev.area,
+        [axis]: value,
+      },
     }));
+    update(
+      {
+        ...graph,
+        area: {
+          ...graph.area,
+          [axis]: value,
+        },
+      },
+      setUpdating
+    );
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   [axis]: value,
+    // }));
   };
 
   const handleChangeBars = (value, b) => {
-    console.log(`selected line ${value}`, value, customization?.area?.length);
+    console.log(`selected line ${value}`, value, graph.area?.areas?.length);
 
-    if (customization?.area?.length === 0 || !customization?.area?.length) {
-      setCustomization((prev) => ({
+    if (graph.area?.areas?.length === 0 || !graph.area?.areas?.length) {
+      setGraph((prev) => ({
         ...prev,
-        area: [
-          ...value.map((e) => ({
-            keyName: e,
-            fill: "#8884d8",
-            stroke: "#8884d8",
-            strokeWidth: 1,
-          })),
-        ],
+        area: {
+          ...prev.area,
+          areas: [
+            ...value.map((e) => ({
+              keyName: e,
+              fill: "#8884d8",
+              stroke: "#8884d8",
+              strokeWidth: 1,
+            })),
+          ],
+        },
       }));
-      // console.log("customization_", customization);
+      update(
+        {
+          ...graph,
+          area: {
+            ...graph.area,
+            areas: [
+              ...value.map((e) => ({
+                keyName: e,
+                fill: "#8884d8",
+                stroke: "#8884d8",
+                strokeWidth: 1,
+              })),
+            ],
+          },
+        },
+        setUpdating
+      );
+      // setCustomization((prev) => ({
+      //   ...prev,
+      //   area: [
+      //     ...value.map((e) => ({
+      //       keyName: e,
+      //       fill: "#8884d8",
+      //       stroke: "#8884d8",
+      //       strokeWidth: 1,
+      //     })),
+      //   ],
+      // }));
+      // console.log("customization_", graph);
       return;
     }
 
     const updatedArr = value.map((name) => {
-      const existingVendor = customization?.area.find(
+      const existingVendor = graph.area?.area.find(
         (vendor) => vendor.keyName === name
       );
       if (existingVendor) {
@@ -64,15 +112,34 @@ const AreaChartCustomization = () => {
       }
     });
 
-    console.log("updatedArr>", updatedArr, customization);
-    setCustomization((prev) => ({
+    console.log("updatedArr>", updatedArr);
+
+    setGraph((prev) => ({
       ...prev,
-      area: updatedArr,
+      area: {
+        ...prev.area,
+        areas: updatedArr,
+      },
     }));
+    update(
+      {
+        ...graph,
+        area: {
+          ...graph.area,
+          areas: updatedArr,
+        },
+      },
+      setUpdating
+    );
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   area: updatedArr,
+    // }));
   };
 
   const handleBarPropertyChange = (color, index, property) => {
-    const update = customization?.area?.map((item, i) => {
+    const update = graph?.area?.areas?.map((item, i) => {
       if (index == i) {
         item[
           property
@@ -80,43 +147,103 @@ const AreaChartCustomization = () => {
       }
       return item;
     });
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      area: update,
+      area: {
+        ...prev.area,
+        areas: update,
+      },
     }));
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   area: update,
+    // }));
   };
 
   const handleStrokeWidthChange = (value, index) => {
-    const update = customization?.area?.map((item, i) => {
+    const update = graph?.area?.areas?.map((item, i) => {
       if (index == i) {
         item.strokeWidth = value;
       }
       return item;
     });
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      area: update,
+      area: {
+        ...prev.area,
+        areas: update,
+      },
     }));
+    update(
+      {
+        ...graph,
+        area: {
+          ...graph.area,
+          areas: update,
+        },
+      },
+      setUpdating
+    );
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   area: update,
+    // }));
   };
 
   const handleTooltipChange = (color, property) => {
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      tooltip: {
-        ...prev.tooltip,
-        [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+      area: {
+        ...prev.area,
+        tooltip: {
+          ...prev.tooltip,
+          [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+        },
       },
     }));
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   tooltip: {
+    //     ...prev.tooltip,
+    //     [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+    //   },
+    // }));
   };
 
   const handleTooltipNumberChange = (value, property) => {
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      tooltip: {
-        ...prev.tooltip,
-        [property]: value,
+      area: {
+        ...prev.area,
+        tooltip: {
+          ...prev.tooltip,
+          [property]: value,
+        },
       },
     }));
+    update(
+      {
+        ...graph,
+        area: {
+          ...graph.area,
+          tooltip: {
+            ...graph.tooltip,
+            [property]: value,
+          },
+        },
+      },
+      setUpdating
+    );
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   tooltip: {
+    //     ...prev.tooltip,
+    //     [property]: value,
+    //   },
+    // }));
   };
 
   const itemsNest = [
@@ -150,6 +277,7 @@ const AreaChartCustomization = () => {
               placeholder="Please select"
               onChange={(e) => handleChange(e, "xaxis")}
               options={optionsXaxis}
+              value={graph.area?.xaxis}
             />
           </Space.Compact>
           <Space.Compact style={{ width: "100%" }}>
@@ -163,7 +291,7 @@ const AreaChartCustomization = () => {
               style={{
                 width: "75%",
               }}
-              value={customization?.area?.map((item, i) => item.keyName)}
+              value={graph?.area?.areas?.map((item, i) => item.keyName)}
               placeholder="Please select"
               onChange={handleChangeBars}
               options={optionsBars}
@@ -191,11 +319,11 @@ const AreaChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `3fr ${
-              customization?.area?.length > 0 ? "1fr 1fr 1fr" : ""
+              graph?.area?.areas?.length > 0 ? "1fr 1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.area?.length == 0 ? (
+          {graph?.area?.areas?.length == 0 ? (
             <span>Please select atleast one Line to customize its color.</span>
           ) : (
             <>
@@ -205,19 +333,29 @@ const AreaChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.area?.map((item, i) => {
+          {graph?.area?.areas?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   // showText
                   style={{ width: 0 }}
-                  value={customization.bars[i]?.fill}
+                  value={graph.area.areas[i]?.fill}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                   onChange={(e) => handleBarPropertyChange(e, i, "fill")}
                 />
                 <ColorPicker
                   style={{ width: 0 }}
-                  value={customization.area[i].stroke}
+                  value={graph?.area?.areas[i].stroke}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
                 />
                 <InputNumber
@@ -247,18 +385,32 @@ const AreaChartCustomization = () => {
           >
             <strong>Tooltip Visible </strong>
             <Switch
-              onClick={() =>
-                setCustomization((prev) => {
-                  return {
-                    ...prev,
+              onClick={() => {
+                setGraph((prev) => ({
+                  ...prev,
+                  area: {
+                    ...prev.area,
                     tooltip: {
                       ...prev.tooltip,
                       visible: !prev.tooltip.visible,
                     },
-                  };
-                })
-              }
-              defaultChecked={customization.tooltip.visible}
+                  },
+                }));
+                update(
+                  {
+                    ...graph,
+                    area: {
+                      ...graph.area,
+                      tooltip: {
+                        ...graph.tooltip,
+                        visible: !graph.tooltip.visible,
+                      },
+                    },
+                  },
+                  setUpdating
+                );
+              }}
+              defaultChecked={graph.area.tooltip.visible}
               checkedChildren="On"
               unCheckedChildren="Off"
             />
@@ -276,7 +428,7 @@ const AreaChartCustomization = () => {
           >
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.area.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -285,14 +437,19 @@ const AreaChartCustomization = () => {
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.area.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.color}
+              value={graph.area?.tooltip?.color}
               onChange={(e) => handleTooltipChange(e, "color")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.area.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -301,14 +458,19 @@ const AreaChartCustomization = () => {
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.area.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.backgroundColor}
+              value={graph.area?.tooltip?.backgroundColor}
               onChange={(e) => handleTooltipChange(e, "backgroundColor")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.area.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -317,14 +479,19 @@ const AreaChartCustomization = () => {
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.area.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.borderColor}
+              value={graph.area?.tooltip?.borderColor}
               onChange={(e) => handleTooltipChange(e, "borderColor")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.area.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -332,17 +499,17 @@ const AreaChartCustomization = () => {
               Border width
             </span>
             <InputNumber
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.area.tooltip.visible}
               style={{ width: 110 }}
               min={0}
               max={20}
-              value={customization?.tooltip?.borderWidth}
+              value={graph.area?.tooltip?.borderWidth}
               onChange={(e) => handleTooltipNumberChange(e, "borderWidth")}
             />
 
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.area.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -350,16 +517,16 @@ const AreaChartCustomization = () => {
               Border Radius
             </span>
             <InputNumber
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.area.tooltip.visible}
               style={{ width: 110 }}
               min={0}
-              value={customization?.tooltip?.borderRadius}
+              value={graph.area?.tooltip?.borderRadius}
               onChange={(e) => handleTooltipNumberChange(e, "borderRadius")}
             />
 
             <span
               style={{
-                color: customization.tooltip.visible
+                color: graph.area.tooltip.visible
                   ? "black"
                   : "rgb(100,100,100)",
               }}
@@ -367,10 +534,10 @@ const AreaChartCustomization = () => {
               Border Type
             </span>
             <Select
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.area.tooltip.visible}
               style={{ width: 110 }}
               min={0}
-              value={customization?.tooltip?.borderStyle}
+              value={graph.area?.tooltip?.borderStyle}
               options={[
                 { value: "dotted", label: "Dotted" },
                 { value: "dashed", label: "Dashed" },
@@ -384,13 +551,36 @@ const AreaChartCustomization = () => {
                 { value: "hidden", label: "Hidden" },
               ]}
               onChange={(e) => {
-                setCustomization((prev) => ({
+                setGraph((prev) => ({
                   ...prev,
-                  tooltip: {
-                    ...prev.tooltip,
-                    borderStyle: e,
+                  area: {
+                    ...prev.area,
+                    tooltip: {
+                      ...prev.tooltip,
+                      borderStyle: e,
+                    },
                   },
                 }));
+                update(
+                  {
+                    ...graph,
+                    area: {
+                      ...graph.area,
+                      tooltip: {
+                        ...graph.tooltip,
+                        borderStyle: e,
+                      },
+                    },
+                  },
+                  setUpdating
+                );
+                // setCustomization((prev) => ({
+                //   ...prev,
+                //   tooltip: {
+                //     ...prev.tooltip,
+                //     borderStyle: e,
+                //   },
+                // }));
               }}
             />
           </div>
@@ -408,11 +598,11 @@ const AreaChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `2fr ${
-              customization?.area?.length > 0 ? "1fr 1fr" : ""
+              graph?.area?.areas?.length > 0 ? "1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.area?.length == 0 ? (
+          {graph?.area?.areas?.length == 0 ? (
             <span>Please select atleast one Line to customize its color.</span>
           ) : (
             <>
@@ -422,14 +612,19 @@ const AreaChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.area?.map((item, i) => {
+          {graph?.area?.areas?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   style={{ width: 0 }}
-                  value={customization.area[i].stroke}
+                  value={graph?.area?.areas[i].stroke}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                 />
                 <InputNumber
                   style={{ width: 50 }}
@@ -455,11 +650,11 @@ const AreaChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `2fr ${
-              customization?.area?.length > 0 ? "1fr 1fr" : ""
+              graph?.area?.areas?.length > 0 ? "1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.area?.length == 0 ? (
+          {graph?.area?.areas?.length == 0 ? (
             <span>Please select atleast one Line to customize its color.</span>
           ) : (
             <>
@@ -469,20 +664,25 @@ const AreaChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.area?.map((item, i) => {
+          {graph?.area?.areas?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   style={{ width: 0 }}
-                  value={customization.area[i].stroke}
+                  value={graph?.area?.areas[i].stroke}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                 />
                 <InputNumber
                   style={{ width: 50 }}
                   min={0}
                   max={10}
-                  value={customization.area[i].strokeWidth}
+                  value={graph?.area?.areas[i].strokeWidth}
                   onChange={(e) => handleStrokeWidthChange(e, i)}
                 />
               </>
@@ -495,13 +695,13 @@ const AreaChartCustomization = () => {
 
   useEffect(() => {
     // console.log("data>", data);
-    createNumberStringNames(data, customization, setCustomization);
+    createNumberStringNames(data, graph, setGraph);
   }, []);
 
   useEffect(() => {
     const newOptionsXYaxis = [];
-    // console.log("customization>", customization);
-    customization?.dataNames.forEach((e) => {
+    // console.log("graph.area>", graph.area);
+    graph.dataNames.forEach((e) => {
       newOptionsXYaxis.push({
         label: e,
         value: e,
@@ -511,20 +711,18 @@ const AreaChartCustomization = () => {
     setOptionsYaxis(newOptionsXYaxis);
     setOptionsXaxis(newOptionsXYaxis);
     const newOptionsBars = [];
-    customization?.numberNames.forEach((e) => {
+    graph?.numberNames.forEach((e) => {
       newOptionsBars.push({
         label: e,
         value: e,
       });
     });
     setOptionsBars(newOptionsBars);
-  }, [customization]);
+  }, [graph.area]);
 
   return (
     <div>
-      {customization?.dataNames && (
-        <Collapse size="small" items={BarCustomization} />
-      )}
+      {graph.dataNames && <Collapse size="small" items={BarCustomization} />}
     </div>
   );
 };

@@ -15,43 +15,75 @@ import {
 } from "recharts";
 import userContext from "../context/userContext";
 import BarChartComponent from "./ChartsTypes/BarChartComponent";
-import { BsBoxArrowRight } from "react-icons/bs";
+import { BsBoxArrowLeft, BsBoxArrowRight } from "react-icons/bs";
 import LineChartComponent from "./ChartsTypes/LineChartComponent";
 import AreaChartComponent from "./ChartsTypes/AreaChartComponent";
 import PieChartComponent from "./ChartsTypes/PieChartComponent";
 import ReactToPrint from "react-to-print";
+import { update } from "./Helper/CommonHelper";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { useNavigate } from "react-router-dom";
 
 const ChartArea = () => {
   const {
     data,
-    chartType,
-    setChartType,
-    hideCustomization,
-    setHideCustomization,
-    chartName,
-    setChartName,
+    // chartType,
+    // setChartType,
+    // hideCustomization,
+    // setHideCustomization,
+    // chartName,
+    // setChartName,
+    graph,
+    setGraph,
+    setUpdating,
   } = useContext(userContext);
 
+  const navigate = useNavigate();
   const printContent = useRef();
-
+  console.log("graph", graph);
   return (
     <div
       className="chartarea"
       style={{
-        width: hideCustomization ? "100vw" : "80vw",
+        width: graph.hideCustomization ? "100vw" : "80vw",
         transition: "all 0.5s ease-in-out",
       }}
     >
       <div className="chartNavBar">
         <div>
-          <BsBoxArrowRight
+          <BsBoxArrowLeft
             style={{
-              fontSize: hideCustomization ? "1.5rem" : "0rem",
+              fontSize: graph.hideCustomization ? "1.5rem" : "0rem",
+              transition: "all 0.5s ease-in-out",
+              marginRight: "40px",
+              transform: "translateY(3px)",
+            }}
+            onClick={() => {
+              navigate("/dashboard");
+            }}
+          />
+          <GiHamburgerMenu
+            style={{
+              fontSize: graph.hideCustomization ? "1.5rem" : "0rem",
               transition: "all 0.5s ease-in-out",
               cursor: "pointer",
               transform: "translateY(15%)",
             }}
-            onClick={() => setHideCustomization(!hideCustomization)}
+            onClick={() => {
+              setGraph((prev) => {
+                return {
+                  ...prev,
+                  hideCustomization: !prev.hideCustomization,
+                };
+              });
+              update(
+                {
+                  ...graph,
+                  hideCustomization: !graph.hideCustomization,
+                },
+                setUpdating
+              );
+            }}
           />
         </div>
         <Input
@@ -59,22 +91,43 @@ const ChartArea = () => {
           onChange={(e) => {
             window.document.title =
               e.target.value === "" ? "Untitled Chart" : e.target.value;
-            setChartName(e.target.value);
+            setGraph((prev) => {
+              return {
+                ...prev,
+                chartName: e.target.value,
+              };
+            });
+            update(
+              {
+                ...graph,
+                chartName: e.target.value,
+              },
+              setUpdating
+            );
           }}
-          value={chartName}
+          value={graph.chartName}
           style={{
             width: 200,
-            fontWeight: chartName === "" ? "" : "bold",
-            fontSize: chartName === "" ? "" : "1.2rem",
+            fontWeight: graph.chartName === "" ? "" : "bold",
+            fontSize: graph.chartName === "" ? "" : "1.2rem",
           }}
-          bordered={chartName === "" ? true : false}
+          bordered={graph.chartName === "" ? true : false}
         />
         <Select
-          value={chartType}
+          value={graph.chartType}
           style={{
             width: 120,
           }}
-          onChange={(e) => setChartType(e)}
+          onChange={(e) => {
+            setGraph((prev) => ({ ...prev, chartType: e }));
+            update(
+              {
+                ...graph,
+                chartType: e,
+              },
+              setUpdating
+            );
+          }}
           options={[
             {
               value: "bar",
@@ -150,13 +203,13 @@ const ChartArea = () => {
       <div ref={printContent} className="chart">
         {data && (
           <>
-            {chartType === "bar" ? (
+            {graph.chartType === "bar" ? (
               <BarChartComponent />
-            ) : chartType === "line" ? (
+            ) : graph.chartType === "line" ? (
               <LineChartComponent />
-            ) : chartType === "area" ? (
+            ) : graph.chartType === "area" ? (
               <AreaChartComponent />
-            ) : chartType === "pie" ? (
+            ) : graph.chartType === "pie" ? (
               <PieChartComponent />
             ) : null}
           </>

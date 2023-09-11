@@ -25,13 +25,16 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const { chartId, setChartId } = useContext(userContext);
+  const { chartId, setGraph } = useContext(userContext);
   useEffect(() => {
     const call = async () => {
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}/chart/all`,
+        {},
         {
-          token: localStorage.getItem("jwt"),
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
         }
       );
       const res = response.data;
@@ -54,12 +57,22 @@ const Dashboard = () => {
     setModalOpen(false);
     const response = await axios.post(
       `${process.env.REACT_APP_SERVER_URL}/chart/create`,
-      { token: localStorage.getItem("jwt"), data: jsonData }
+      { data: jsonData },
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      }
     );
     const res = response.data;
     if (res.success) {
-      console.log("chartID", chartId);
-      setChartId(res.chart._id);
+      console.log("chartID");
+      setGraph((prev) => {
+        return {
+          ...prev,
+          chartId: res.chart._id,
+        };
+      });
       navigate(`/chart/${res.chart._id}`);
     } else {
       console.log("some error ocured");
@@ -130,7 +143,7 @@ const Dashboard = () => {
           <>
             {data.map((chart, i) => {
               console.log(i);
-              return <Card chart={chart} />;
+              return <Card chart={chart} graph={chart.graph} />;
             })}
           </>
         )}

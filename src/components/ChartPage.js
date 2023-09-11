@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import CustomizationPanel from "./CustomizationPanel";
 import ChartArea from "./ChartArea";
@@ -17,17 +17,30 @@ const ChartPage = () => {
     setChartType,
     setHideCustomization,
     setChartName,
+    graph,
+    setGraph,
   } = useContext(userContext);
+  const [firstLoading, setFirstLoading] = useState(true);
 
   useEffect(() => {
     const call = async () => {
       try {
         const response = await axios.post(
           `${process.env.REACT_APP_SERVER_URL}/chart/getchart`,
-          { token: localStorage.getItem("jwt"), id }
+          { id },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("jwt"),
+            },
+          }
         );
-        setChartId(id);
-        console.log("+", response.data);
+        // setGraph((prev) => {
+        //   return {
+        //     ...prev,
+        //     chartId: id,
+        //   };
+        // });
+
         const newData = response.data.chart.data.map((item) => {
           let newItem = {};
           const isNumeric = (num) =>
@@ -42,24 +55,104 @@ const ChartPage = () => {
           }
           return newItem;
         });
+
         setData(newData);
+
         console.log("+n", newData);
-        if (response.data.chart.customization) {
-          setCustomization(response.data.chart.customization);
+        console.log("chart", response.data.chart);
+        if (response.data.chart.graph) {
+          setGraph(response.data.chart.graph);
+        } else {
+          setGraph({
+            numberNames: [],
+            stringNames: [],
+            dataNames: [],
+            chartType: "bar",
+            chartName: "",
+            chartId: response.data.chart._id,
+            hideCustomization: false,
+            bar: {
+              bars: [],
+              xaxis: "",
+              yaxis: "",
+              tooltip: {
+                visible: true,
+                backgroundColor: "rgba(255,255,255,1)",
+                color: "rgba(0,0,0,1)",
+                borderRadius: "0px",
+                borderColor: "rgba(170,170,170,1)",
+                borderWidth: "1px",
+                borderStyle: "solid",
+              },
+              brush: {
+                startIndex: 0,
+                endIndex: 10,
+                stroke: "#8884d8",
+              },
+            },
+            line: {
+              lines: [],
+              xaxis: "",
+              yaxis: "",
+              tooltip: {
+                visible: true,
+                backgroundColor: "rgba(255,255,255,1)",
+                color: "rgba(0,0,0,1)",
+                borderRadius: "0px",
+                borderColor: "rgba(170,170,170,1)",
+                borderWidth: "1px",
+                borderStyle: "solid",
+              },
+              brush: {
+                startIndex: 0,
+                endIndex: 10,
+                stroke: "#8884d8",
+              },
+            },
+            pie: {
+              pies: [],
+              xaxis: "",
+              yaxis: "",
+              tooltip: {
+                visible: true,
+                backgroundColor: "rgba(255,255,255,1)",
+                color: "rgba(0,0,0,1)",
+                borderRadius: "0px",
+                borderColor: "rgba(170,170,170,1)",
+                borderWidth: "1px",
+                borderStyle: "solid",
+              },
+              brush: {
+                startIndex: 0,
+                endIndex: 10,
+                stroke: "#8884d8",
+              },
+            },
+            area: {
+              areas: [],
+              xaxis: "",
+              yaxis: "",
+              tooltip: {
+                visible: true,
+                backgroundColor: "rgba(255,255,255,1)",
+                color: "rgba(0,0,0,1)",
+                borderRadius: "0px",
+                borderColor: "rgba(170,170,170,1)",
+                borderWidth: "1px",
+                borderStyle: "solid",
+              },
+              brush: {
+                startIndex: 0,
+                endIndex: 10,
+                stroke: "#8884d8",
+              },
+            },
+          });
         }
-        if (response.data.chart.chartType) {
-          setChartType(response.data.chart.chartType);
-        }
-        if (response.data.chart.hideCustomization) {
-          setHideCustomization(response.data.chart.hideCustomization);
-        }
-        if (response.data.chart.name !== "") {
-          window.document.title = response.data.chart.name;
-          setChartName(response.data.chart.name);
-        }
+        setFirstLoading(false);
       } catch (error) {
         console.log(error);
-        if (error.response.data.message === "Please login first") {
+        if (error?.response?.data?.message === "Please login first") {
           navigator("/unauthorized");
         }
       }
@@ -71,8 +164,18 @@ const ChartPage = () => {
     <div>
       <Navbar />
       <div className="page">
-        <CustomizationPanel />
-        <ChartArea />
+        {firstLoading ? (
+          <div class="pl1">
+            <div class="pl1__a"></div>
+            <div class="pl1__b"></div>
+            <div class="pl1__c"></div>
+          </div>
+        ) : (
+          <>
+            <CustomizationPanel />
+            <ChartArea />
+          </>
+        )}
       </div>
     </div>
   );

@@ -7,10 +7,14 @@ import BarChartCustomization from "./CustomizationTypes/BarChartCustomization";
 import LineChartCustomization from "./CustomizationTypes/LineChartCustomization";
 import AreaChartCustomization from "./CustomizationTypes/AreaChartCustomization";
 import PieChartCustomization from "./CustomizationTypes/PieChartCustomization";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { IoClose } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { update } from "./Helper/CommonHelper";
 
 const CustomizationPanel = () => {
-  const { data, chartType, hideCustomization, setHideCustomization } =
-    useContext(userContext);
+  const { data, graph, setGraph, setUpdating } = useContext(userContext);
+  const navigate = useNavigate();
 
   // const onChange = (key) => {
   //   console.log(key);
@@ -19,21 +23,43 @@ const CustomizationPanel = () => {
     <div
       className="customizationPanel"
       style={{
-        width: hideCustomization ? "0vw" : "20vw",
-        padding: hideCustomization ? "15px 0px" : "10px 20px",
+        width: graph.hideCustomization ? "0vw" : "20vw",
+        padding: graph.hideCustomization ? "15px 0px" : "10px 20px",
         transition: "all 0.5s ease-in-out",
       }}
     >
       <div className="absolute_side">
         <h4 className="heading">
-          Customization Panel{" "}
           <BsBoxArrowLeft
             style={{
-              fontSize: hideCustomization ? "0rem" : "1.5rem",
+              fontSize: graph.hideCustomization ? "0rem" : "1.5rem",
               transition: "all 0.5s ease-in-out",
             }}
-            onClick={() => setHideCustomization(!hideCustomization)}
+            onClick={() => {
+              navigate("/dashboard");
+            }}
           />
+          <IoClose
+            style={{
+              fontSize: graph.hideCustomization ? "0rem" : "1.7rem",
+              transition: "all 0.5s ease-in-out",
+              transform: "translateY(-2.5px)",
+            }}
+            onClick={() => {
+              setGraph((prev) => ({
+                ...prev,
+                hideCustomization: !prev.hideCustomization,
+              }));
+              update(
+                {
+                  ...graph,
+                  hideCustomization: !graph.hideCustomization,
+                },
+                setUpdating
+              );
+            }}
+          />
+          Customization Panel{" "}
         </h4>
         {/* <Collapse size="small" onChange={onChange} items={items} /> */}
         <div
@@ -46,13 +72,13 @@ const CustomizationPanel = () => {
         >
           {data && (
             <>
-              {chartType === "bar" ? (
+              {graph.chartType === "bar" ? (
                 <BarChartCustomization />
-              ) : chartType === "line" ? (
+              ) : graph.chartType === "line" ? (
                 <LineChartCustomization />
-              ) : chartType === "area" ? (
+              ) : graph.chartType === "area" ? (
                 <AreaChartCustomization />
-              ) : chartType === "pie" ? (
+              ) : graph.chartType === "pie" ? (
                 <PieChartCustomization />
               ) : null}
             </>

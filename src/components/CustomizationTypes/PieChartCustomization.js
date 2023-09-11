@@ -11,10 +11,10 @@ import {
   Switch,
 } from "antd";
 import userContext from "../../context/userContext";
-import { createNumberStringNames } from "../Helper/CommonHelper";
+import { createNumberStringNames, update } from "../Helper/CommonHelper";
 
 const PieChartCustomization = () => {
-  const { data, customization, setCustomization } = useContext(userContext);
+  const { data, graph, setGraph, setUpdating } = useContext(userContext);
   const [optionsYaxis, setOptionsYaxis] = useState([]);
   const [optionsXaxis, setOptionsXaxis] = useState([]);
   const [optionsBars, setOptionsBars] = useState([]);
@@ -23,33 +23,82 @@ const PieChartCustomization = () => {
 
   const handleChange = (value, axis) => {
     // console.log(`selected ${value}`, typeof value);
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      [axis]: value,
+      pie: {
+        ...prev.pie,
+        [axis]: value,
+      },
     }));
+    update(
+      {
+        ...graph,
+        pie: {
+          ...graph.pie,
+          [axis]: value,
+        },
+      },
+      setUpdating
+    );
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   [axis]: value,
+    // }));
   };
 
   const handleChangeBars = (value, b) => {
-    console.log(`selected line ${value}`, value, customization?.pie?.length);
+    console.log(`selected line ${value}`, value, graph?.pie?.pies?.length);
 
-    if (customization?.pie?.length === 0 || !customization?.pie?.length) {
-      setCustomization((prev) => ({
+    if (graph?.pie?.pies?.length === 0 || !graph?.pie?.pies?.length) {
+      setGraph((prev) => ({
         ...prev,
-        pie: [
-          ...value.map((e) => ({
-            keyName: e,
-            fill: "rgba(136.00884,132.010032,215.98499999999999,0.5)",
-            stroke: "#8884d8",
-            strokeWidth: 1,
-          })),
-        ],
+        pie: {
+          ...prev.pie,
+          pies: [
+            ...value.map((e) => ({
+              keyName: e,
+              fill: "rgba(136.00884,132.010032,215.98499999999999,0.5)",
+              stroke: "#8884d8",
+              strokeWidth: 1,
+            })),
+          ],
+        },
       }));
-      // console.log("customization_", customization);
+      update(
+        {
+          ...graph,
+          pie: {
+            ...graph.pie,
+            pies: [
+              ...value.map((e) => ({
+                keyName: e,
+                fill: "rgba(136.00884,132.010032,215.98499999999999,0.5)",
+                stroke: "#8884d8",
+                strokeWidth: 1,
+              })),
+            ],
+          },
+        },
+        setUpdating
+      );
+
+      // setCustomization((prev) => ({
+      //   ...prev,
+      //   pie: [
+      //     ...value.map((e) => ({
+      //       keyName: e,
+      //       fill: "rgba(136.00884,132.010032,215.98499999999999,0.5)",
+      //       stroke: "#8884d8",
+      //       strokeWidth: 1,
+      //     })),
+      //   ],
+      // }));
+      // console.log("customization_", graph.pie);
       return;
     }
 
     const updatedArr = value.map((name) => {
-      const existingVendor = customization?.pie.find(
+      const existingVendor = graph?.pie?.pies.find(
         (vendor) => vendor.keyName === name
       );
       if (existingVendor) {
@@ -64,15 +113,33 @@ const PieChartCustomization = () => {
       }
     });
 
-    console.log("updatedArr>", updatedArr, customization);
-    setCustomization((prev) => ({
+    console.log("updatedArr>", updatedArr, graph.pie);
+    setGraph((prev) => ({
       ...prev,
-      pie: updatedArr,
+      pie: {
+        ...prev.pie,
+        pies: updatedArr,
+      },
     }));
+    update(
+      {
+        ...graph,
+        pie: {
+          ...graph.pie,
+          pies: updatedArr,
+        },
+      },
+      setUpdating
+    );
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   pie: updatedArr,
+    // }));
   };
 
   const handleBarPropertyChange = (color, index, property) => {
-    const update = customization?.pie?.map((item, i) => {
+    const newUpdate = graph?.pie?.pies?.map((item, i) => {
       if (index == i) {
         item[
           property
@@ -80,43 +147,104 @@ const PieChartCustomization = () => {
       }
       return item;
     });
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      pie: update,
+      pie: {
+        ...prev.pie,
+        pies: newUpdate,
+      },
     }));
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   pie: update,
+    // }));
   };
 
   const handleStrokeWidthChange = (value, index) => {
-    const update = customization?.pie?.map((item, i) => {
+    const newUpdate = graph?.pie?.pies?.map((item, i) => {
       if (index == i) {
         item.strokeWidth = value;
       }
       return item;
     });
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      pie: update,
+      pie: {
+        ...prev.pie,
+        pies: newUpdate,
+      },
     }));
+    update(
+      {
+        ...graph,
+        pie: {
+          ...graph.pie,
+          pies: newUpdate,
+        },
+      },
+      setUpdating
+    );
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   pie: update,
+    // }));
   };
 
   const handleTooltipChange = (color, property) => {
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      tooltip: {
-        ...prev.tooltip,
-        [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+      pie: {
+        ...prev.pie,
+        tooltip: {
+          ...prev.pie.tooltip,
+          [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+        },
       },
     }));
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   tooltip: {
+    //     ...prev.tooltip,
+    //     [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+    //   },
+    // }));
   };
 
   const handleTooltipNumberChange = (value, property) => {
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      tooltip: {
-        ...prev.tooltip,
-        [property]: value,
+      pie: {
+        ...prev.pie,
+        tooltip: {
+          ...prev.pie.tooltip,
+          [property]: value,
+        },
       },
     }));
+    update(
+      {
+        ...graph,
+        pie: {
+          ...graph.pie,
+          tooltip: {
+            ...graph.pie.tooltip,
+            [property]: value,
+          },
+        },
+      },
+      setUpdating
+    );
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   tooltip: {
+    //     ...prev.tooltip,
+    //     [property]: value,
+    //   },
+    // }));
   };
 
   const itemsNest = [
@@ -150,6 +278,7 @@ const PieChartCustomization = () => {
               placeholder="Please select"
               onChange={(e) => handleChange(e, "xaxis")}
               options={optionsXaxis}
+              value={graph.pie?.xaxis}
             />
           </Space.Compact>
           <Space.Compact style={{ width: "100%" }}>
@@ -163,7 +292,7 @@ const PieChartCustomization = () => {
               style={{
                 width: "75%",
               }}
-              value={customization?.pie?.map((item, i) => item.keyName)}
+              value={graph?.pie?.pies?.map((item, i) => item.keyName)}
               placeholder="Please select"
               onChange={handleChangeBars}
               options={optionsBars}
@@ -191,11 +320,11 @@ const PieChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `3fr ${
-              customization?.pie?.length > 0 ? "1fr 1fr 1fr" : ""
+              graph?.pie?.pies?.length > 0 ? "1fr 1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.pie?.length == 0 ? (
+          {graph?.pie?.pies?.length == 0 ? (
             <span>Please select atleast one Pie to customize its color.</span>
           ) : (
             <>
@@ -205,26 +334,36 @@ const PieChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.pie?.map((item, i) => {
+          {graph?.pie?.pies?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   // showText
                   style={{ width: 0 }}
-                  value={customization.pie[i].fill}
+                  value={graph?.pie?.pies[i].fill}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                   onChange={(e) => handleBarPropertyChange(e, i, "fill")}
                 />
                 <ColorPicker
                   style={{ width: 0 }}
-                  value={customization.pie[i].stroke}
+                  value={graph?.pie?.pies[i].stroke}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
                 />
                 <InputNumber
                   style={{ width: 50 }}
                   min={0}
                   max={10}
-                  value={customization.pie[i].strokeWidth}
+                  value={graph?.pie?.pies[i].strokeWidth}
                   onChange={(e) => handleStrokeWidthChange(e, i)}
                 />
               </>
@@ -247,18 +386,44 @@ const PieChartCustomization = () => {
           >
             <strong>Tooltip Visible </strong>
             <Switch
-              onClick={() =>
-                setCustomization((prev) => {
+              onClick={() => {
+                setGraph((prev) => {
                   return {
                     ...prev,
-                    tooltip: {
-                      ...prev.tooltip,
-                      visible: !prev.tooltip.visible,
+                    pie: {
+                      ...prev.pie,
+                      tooltip: {
+                        ...prev.pie.tooltip,
+                        visible: !prev.pie.tooltip.visible,
+                      },
                     },
                   };
-                })
-              }
-              defaultChecked={customization.tooltip.visible}
+                });
+                update(
+                  {
+                    ...graph,
+                    pie: {
+                      ...graph.pie,
+                      tooltip: {
+                        ...graph.pie.tooltip,
+                        visible: !graph.pie.tooltip.visible,
+                      },
+                    },
+                  },
+                  setUpdating
+                );
+              }}
+              //   setCustomization((prev) => {
+              //     return {
+              //       ...prev,
+              //       tooltip: {
+              //         ...prev.tooltip,
+              //         visible: !prev.tooltip.visible,
+              //       },
+              //     };
+              //   })
+              // }
+              defaultChecked={graph.pie.tooltip.visible}
               checkedChildren="On"
               unCheckedChildren="Off"
             />
@@ -276,101 +441,104 @@ const PieChartCustomization = () => {
           >
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.pie.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Heading Text Color
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.pie.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.color}
+              value={graph.pie?.tooltip?.color}
               onChange={(e) => handleTooltipChange(e, "color")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.pie.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Background Color
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.pie.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.backgroundColor}
+              value={graph.pie?.tooltip?.backgroundColor}
               onChange={(e) => handleTooltipChange(e, "backgroundColor")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.pie.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Border color
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.pie.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.borderColor}
+              value={graph.pie?.tooltip?.borderColor}
               onChange={(e) => handleTooltipChange(e, "borderColor")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.pie.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Border width
             </span>
             <InputNumber
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.pie.tooltip.visible}
               style={{ width: 110 }}
               min={0}
               max={20}
-              value={customization?.tooltip?.borderWidth}
+              value={graph.pie?.tooltip?.borderWidth}
               onChange={(e) => handleTooltipNumberChange(e, "borderWidth")}
             />
 
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.pie.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Border Radius
             </span>
             <InputNumber
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.pie.tooltip.visible}
               style={{ width: 110 }}
               min={0}
-              value={customization?.tooltip?.borderRadius}
+              value={graph.pie?.tooltip?.borderRadius}
               onChange={(e) => handleTooltipNumberChange(e, "borderRadius")}
             />
 
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.pie.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Border Type
             </span>
             <Select
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.pie.tooltip.visible}
               style={{ width: 110 }}
               min={0}
-              value={customization?.tooltip?.borderStyle}
+              value={graph.pie?.tooltip?.borderStyle}
               options={[
                 { value: "dotted", label: "Dotted" },
                 { value: "dashed", label: "Dashed" },
@@ -384,13 +552,37 @@ const PieChartCustomization = () => {
                 { value: "hidden", label: "Hidden" },
               ]}
               onChange={(e) => {
-                setCustomization((prev) => ({
+                setGraph((prev) => ({
                   ...prev,
-                  tooltip: {
-                    ...prev.tooltip,
-                    borderStyle: e,
+                  pie: {
+                    ...prev.pie,
+                    tooltip: {
+                      ...prev.pie.tooltip,
+                      borderStyle: e,
+                    },
                   },
                 }));
+                update(
+                  {
+                    ...graph,
+                    pie: {
+                      ...graph.pie,
+                      tooltip: {
+                        ...graph.pie.tooltip,
+                        borderStyle: e,
+                      },
+                    },
+                  },
+                  setUpdating
+                );
+
+                // setCustomization((prev) => ({
+                //   ...prev,
+                //   tooltip: {
+                //     ...prev.tooltip,
+                //     borderStyle: e,
+                //   },
+                // }));
               }}
             />
           </div>
@@ -408,11 +600,11 @@ const PieChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `2fr ${
-              customization?.pie?.length > 0 ? "1fr 1fr" : ""
+              graph?.pie?.pies?.length > 0 ? "1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.pie?.length == 0 ? (
+          {graph?.pie?.pies?.length == 0 ? (
             <span>Please select atleast one Line to customize its color.</span>
           ) : (
             <>
@@ -422,20 +614,25 @@ const PieChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.pie?.map((item, i) => {
+          {graph?.pie?.pies?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   style={{ width: 0 }}
-                  value={customization.pie[i].stroke}
+                  value={graph?.pie?.pies[i].stroke}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                 />
                 <InputNumber
                   style={{ width: 50 }}
                   min={0}
                   max={10}
-                  value={customization.pie[i].strokeWidth}
+                  value={graph?.pie?.pies[i].strokeWidth}
                   onChange={(e) => handleStrokeWidthChange(e, i)}
                 />
               </>
@@ -455,11 +652,11 @@ const PieChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `2fr ${
-              customization?.pie?.length > 0 ? "1fr 1fr" : ""
+              graph?.pie?.pies?.length > 0 ? "1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.pie?.length == 0 ? (
+          {graph?.pie?.pies?.length == 0 ? (
             <span>Please select atleast one Line to customize its color.</span>
           ) : (
             <>
@@ -469,20 +666,25 @@ const PieChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.pie?.map((item, i) => {
+          {graph?.pie?.pies?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   style={{ width: 0 }}
-                  value={customization.pie[i].stroke}
+                  value={graph?.pie?.pies[i].stroke}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                 />
                 <InputNumber
                   style={{ width: 50 }}
                   min={0}
                   max={10}
-                  value={customization.pie[i].strokeWidth}
+                  value={graph?.pie?.pies[i].strokeWidth}
                   onChange={(e) => handleStrokeWidthChange(e, i)}
                 />
               </>
@@ -495,13 +697,13 @@ const PieChartCustomization = () => {
 
   useEffect(() => {
     // console.log("data>", data);
-    createNumberStringNames(data, customization, setCustomization);
+    createNumberStringNames(data, graph, setGraph);
   }, []);
 
   useEffect(() => {
     const newOptionsXYaxis = [];
-    // console.log("customization>", customization);
-    customization?.dataNames.forEach((e) => {
+    // console.log("graph.pie>", graph.pie);
+    graph?.dataNames.forEach((e) => {
       newOptionsXYaxis.push({
         label: e,
         value: e,
@@ -511,20 +713,18 @@ const PieChartCustomization = () => {
     setOptionsYaxis(newOptionsXYaxis);
     setOptionsXaxis(newOptionsXYaxis);
     const newOptionsBars = [];
-    customization?.numberNames.forEach((e) => {
+    graph?.numberNames.forEach((e) => {
       newOptionsBars.push({
         label: e,
         value: e,
       });
     });
     setOptionsBars(newOptionsBars);
-  }, [customization]);
+  }, [graph.pie]);
 
   return (
     <div>
-      {customization?.dataNames && (
-        <Collapse size="small" items={BarCustomization} />
-      )}
+      {graph?.dataNames && <Collapse size="small" items={BarCustomization} />}
     </div>
   );
 };

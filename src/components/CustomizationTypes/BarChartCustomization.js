@@ -11,45 +11,97 @@ import {
   Switch,
 } from "antd";
 import userContext from "../../context/userContext";
-import { createNumberStringNames } from "../Helper/CommonHelper";
+import { createNumberStringNames, update } from "../Helper/CommonHelper";
 
 const BarChartCustomization = () => {
-  const { data, customization, setCustomization } = useContext(userContext);
+  const { data, graph, setGraph, setUpdating } = useContext(userContext);
   const [optionsYaxis, setOptionsYaxis] = useState([]);
   const [optionsXaxis, setOptionsXaxis] = useState([]);
   const [optionsBars, setOptionsBars] = useState([]);
-
-  const text = `A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.`;
+  console.log("graph bar", graph);
 
   const handleChange = (value, axis) => {
     // console.log(`selected ${value}`, typeof value);
-    setCustomization((prev) => ({
-      ...prev,
-      [axis]: value,
-    }));
+    setGraph((prev) => {
+      return {
+        ...prev,
+        bar: {
+          ...prev.bar,
+          [axis]: value,
+        },
+      };
+    });
+    update(
+      {
+        ...graph,
+        bar: {
+          ...graph.bar,
+          [axis]: value,
+        },
+      },
+      setUpdating
+    );
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   [axis]: value,
+    // }));
   };
 
   const handleChangeBars = (value, b) => {
     // console.log(`selected bar ${value}`, value);
 
-    if (customization?.bars?.length === 0) {
-      setCustomization((prev) => ({
-        ...prev,
-        bars: [
-          ...value.map((e) => ({
-            keyName: e,
-            fill: "#8884d8",
-            stroke: "#8884d8",
-            strokeWidth: 0,
-          })),
-        ],
-      }));
+    if (graph?.bar?.bars?.length === 0) {
+      setGraph((prev) => {
+        return {
+          ...prev,
+          bar: {
+            ...prev.bar,
+            bars: [
+              ...value.map((e) => ({
+                keyName: e,
+                fill: "#8884d8",
+                stroke: "#8884d8",
+                strokeWidth: 0,
+              })),
+            ],
+          },
+        };
+      });
+      console.log("...> graph", graph);
+      update(
+        {
+          ...graph,
+          bar: {
+            ...graph.bar,
+            bars: [
+              ...value.map((e) => ({
+                keyName: e,
+                fill: "#8884d8",
+                stroke: "#8884d8",
+                strokeWidth: 0,
+              })),
+            ],
+          },
+        },
+        setUpdating
+      );
+      // setCustomization((prev) => ({
+      //   ...prev,
+      //   bars: [
+      //     ...value.map((e) => ({
+      //       keyName: e,
+      //       fill: "#8884d8",
+      //       stroke: "#8884d8",
+      //       strokeWidth: 0,
+      //     })),
+      //   ],
+      // }));
       // console.log("customization_", customization);
       return;
     }
 
     const updatedArr = value.map((name) => {
-      const existingVendor = customization?.bars.find(
+      const existingVendor = graph.bar?.bars.find(
         (vendor) => vendor.keyName === name
       );
       if (existingVendor) {
@@ -65,14 +117,28 @@ const BarChartCustomization = () => {
     });
 
     // console.log("updatedArr>", updatedArr, customization);
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      bars: updatedArr,
+      bar: {
+        ...prev.bar,
+        bars: updatedArr,
+      },
     }));
+
+    update(
+      {
+        ...graph,
+        bar: {
+          ...graph.bar,
+          bars: updatedArr,
+        },
+      },
+      setUpdating
+    );
   };
 
   const handleBarPropertyChange = (color, index, property) => {
-    const update = customization?.bars?.map((item, i) => {
+    const newUpdate = graph.bar?.bars?.map((item, i) => {
       if (index == i) {
         item[
           property
@@ -80,43 +146,116 @@ const BarChartCustomization = () => {
       }
       return item;
     });
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      bars: update,
+      bar: {
+        ...prev.bar,
+        bars: newUpdate,
+      },
     }));
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   bars: update,
+    // }));
   };
 
   const handleStrokeWidthChange = (value, index) => {
-    const update = customization?.bars?.map((item, i) => {
+    const newUpdate = graph.bar?.bars?.map((item, i) => {
       if (index == i) {
         item.strokeWidth = value;
       }
       return item;
     });
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      bars: update,
+      bar: {
+        ...prev.bar,
+        bars: newUpdate,
+      },
     }));
+    update(
+      {
+        ...graph,
+        bar: {
+          ...graph.bar,
+          bars: newUpdate,
+        },
+      },
+      setUpdating
+    );
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   bars: update,
+    // }));
   };
 
   const handleTooltipChange = (color, property) => {
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      tooltip: {
-        ...prev.tooltip,
-        [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+      bar: {
+        ...prev.bar,
+        tooltip: {
+          ...prev.bar.tooltip,
+          [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+        },
       },
     }));
+    console.log("here");
+    // update(
+    //   {
+    //     ...graph,
+    //     bar: {
+    //       ...graph.bar,
+    //       tooltip: {
+    //         ...graph.bar.tooltip,
+    //         [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+    //       },
+    //     },
+    //   },
+    //   setUpdating
+    // );
+
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   tooltip: {
+    //     ...prev.tooltip,
+    //     [property]: `rgba(${color.metaColor.r},${color.metaColor.g},${color.metaColor.b},${color.metaColor.a})`,
+    //   },
+    // }));
   };
 
   const handleTooltipNumberChange = (value, property) => {
-    setCustomization((prev) => ({
+    setGraph((prev) => ({
       ...prev,
-      tooltip: {
-        ...prev.tooltip,
-        [property]: value,
+      bar: {
+        ...prev.bar,
+        tooltip: {
+          ...prev.bar.tooltip,
+          [property]: value,
+        },
       },
     }));
+    update(
+      {
+        ...graph,
+        bar: {
+          ...graph.bar,
+          tooltip: {
+            ...graph.bar.tooltip,
+            [property]: value,
+          },
+        },
+      },
+      setUpdating
+    );
+    // setCustomization((prev) => ({
+    //   ...prev,
+    //   tooltip: {
+    //     ...prev.tooltip,
+    //     [property]: value,
+    //   },
+    // }));
   };
 
   const itemsNest = [
@@ -125,18 +264,6 @@ const BarChartCustomization = () => {
       label: "Choose data points for x and y axis",
       children: (
         <>
-          {/* <Space.Compact style={{ marginBottom: "10px", width: "100%" }}>
-            <Input style={{ width: "25%", cursor: "default" }} value="Y-Axis" />
-            <Select
-              allowClear
-              style={{
-                width: "75%",
-              }}
-              placeholder="Please select"
-              onChange={(e) => handleChange(e, "yaxis")}
-              options={optionsYaxis}
-            />
-          </Space.Compact> */}
           <Space.Compact style={{ marginBottom: "10px", width: "100%" }}>
             <Input
               style={{ width: "25%", cursor: "default" }}
@@ -150,6 +277,7 @@ const BarChartCustomization = () => {
               placeholder="Please select"
               onChange={(e) => handleChange(e, "xaxis")}
               options={optionsXaxis}
+              value={graph.bar?.xaxis}
             />
           </Space.Compact>
           <Space.Compact style={{ width: "100%" }}>
@@ -163,7 +291,7 @@ const BarChartCustomization = () => {
               style={{
                 width: "75%",
               }}
-              value={customization?.bars?.map((item, i) => item.keyName)}
+              value={graph.bar?.bars?.map((item, i) => item.keyName)}
               placeholder="Please select"
               onChange={handleChangeBars}
               options={optionsBars}
@@ -191,11 +319,11 @@ const BarChartCustomization = () => {
             justifyContent: "center",
             alignItems: "center",
             gridTemplateColumns: `3fr ${
-              customization?.bars?.length > 0 ? "1fr 1fr 1fr" : ""
+              graph.bar?.bars?.length > 0 ? "1fr 1fr 1fr" : ""
             }`,
           }}
         >
-          {customization?.bars?.length == 0 ? (
+          {graph.bar?.bars?.length == 0 ? (
             <span>Please select atleast one bar to customize its color.</span>
           ) : (
             <>
@@ -205,31 +333,37 @@ const BarChartCustomization = () => {
               <strong>Stroke Width</strong>
             </>
           )}
-          {customization?.bars?.map((item, i) => {
+          {graph.bar?.bars?.map((item, i) => {
             return (
               <>
                 <label>{item.keyName}</label>
                 <ColorPicker
                   // showText
                   style={{ width: 0 }}
-                  value={customization.bars[i].fill}
-                  // onChangeComplete={(e) =>
-                  //   handleBarPropertyChange(e, i, "fill")
-                  // }
-                  onOpenChange={(e) => console.log("tto_>", e)}
+                  value={graph.bar.bars[i].fill}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                   onChange={(e) => handleBarPropertyChange(e, i, "fill")}
                 />
                 <ColorPicker
                   // showText
                   style={{ width: 0 }}
-                  value={customization.bars[i].stroke}
+                  value={graph.bar.bars[i].stroke}
+                  onOpenChange={(e) => {
+                    if (e === false) {
+                      update(graph, setUpdating);
+                    }
+                  }}
                   onChange={(e) => handleBarPropertyChange(e, i, "stroke")}
                 />
                 <InputNumber
                   style={{ width: 50 }}
                   min={0}
                   max={10}
-                  value={customization.bars[i].strokeWidth}
+                  value={graph.bar.bars[i].strokeWidth}
                   onChange={(e) => handleStrokeWidthChange(e, i)}
                 />
               </>
@@ -252,18 +386,44 @@ const BarChartCustomization = () => {
           >
             <strong>Tooltip Visible </strong>
             <Switch
-              onClick={() =>
-                setCustomization((prev) => {
-                  return {
+              onClick={
+                () => {
+                  setGraph((prev) => ({
                     ...prev,
-                    tooltip: {
-                      ...prev.tooltip,
-                      visible: !prev.tooltip.visible,
+                    bar: {
+                      ...prev.bar,
+                      tooltip: {
+                        ...prev.bar.tooltip,
+                        visible: !prev.bar.tooltip.visible,
+                      },
                     },
-                  };
-                })
+                  }));
+                  update(
+                    {
+                      ...graph,
+                      bar: {
+                        ...graph.bar,
+                        tooltip: {
+                          ...graph.bar.tooltip,
+                          visible: !graph.bar.tooltip.visible,
+                        },
+                      },
+                    },
+                    setUpdating
+                  );
+                }
+
+                // setCustomization((prev) => {
+                //   return {
+                //     ...prev,
+                //     tooltip: {
+                //       ...prev.tooltip,
+                //       visible: !prev.tooltip.visible,
+                //     },
+                //   };
+                // })
               }
-              defaultChecked={customization.tooltip.visible}
+              defaultChecked={graph.bar.tooltip.visible}
               checkedChildren="On"
               unCheckedChildren="Off"
             />
@@ -281,101 +441,104 @@ const BarChartCustomization = () => {
           >
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.bar.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Heading Text Color
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.bar.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.color}
+              value={graph.bar?.tooltip?.color}
               onChange={(e) => handleTooltipChange(e, "color")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.bar.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Background Color
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.bar.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.backgroundColor}
+              value={graph.bar?.tooltip?.backgroundColor}
               onChange={(e) => handleTooltipChange(e, "backgroundColor")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.bar.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Border color
             </span>
             <ColorPicker
               showText
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.bar.tooltip.visible}
               style={{ width: 110 }}
-              value={customization?.tooltip?.borderColor}
+              value={graph.bar?.tooltip?.borderColor}
               onChange={(e) => handleTooltipChange(e, "borderColor")}
+              onOpenChange={(e) => {
+                if (e === false) {
+                  update(graph, setUpdating);
+                }
+              }}
             />
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.bar.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Border width
             </span>
             <InputNumber
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.bar.tooltip.visible}
               style={{ width: 110 }}
               min={0}
               max={20}
-              value={customization?.tooltip?.borderWidth}
+              value={graph.bar?.tooltip?.borderWidth}
               onChange={(e) => handleTooltipNumberChange(e, "borderWidth")}
             />
 
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.bar.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Border Radius
             </span>
             <InputNumber
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.bar.tooltip.visible}
               style={{ width: 110 }}
               min={0}
-              value={customization?.tooltip?.borderRadius}
+              value={graph.bar?.tooltip?.borderRadius}
               onChange={(e) => handleTooltipNumberChange(e, "borderRadius")}
             />
 
             <span
               style={{
-                color: customization.tooltip.visible
-                  ? "black"
-                  : "rgb(100,100,100)",
+                color: graph.bar.tooltip.visible ? "black" : "rgb(100,100,100)",
               }}
             >
               Border Type
             </span>
             <Select
-              disabled={!customization.tooltip.visible}
+              disabled={!graph.bar.tooltip.visible}
               style={{ width: 110 }}
               min={0}
-              value={customization?.tooltip?.borderStyle}
+              value={graph.bar?.tooltip?.borderStyle}
               options={[
                 { value: "dotted", label: "Dotted" },
                 { value: "dashed", label: "Dashed" },
@@ -389,13 +552,37 @@ const BarChartCustomization = () => {
                 { value: "hidden", label: "Hidden" },
               ]}
               onChange={(e) => {
-                setCustomization((prev) => ({
+                setGraph((prev) => ({
                   ...prev,
-                  tooltip: {
-                    ...prev.tooltip,
-                    borderStyle: e,
+                  bar: {
+                    ...prev.bar,
+                    tooltip: {
+                      ...prev.bar.tooltip,
+                      borderStyle: e,
+                    },
                   },
                 }));
+                update(
+                  {
+                    ...graph,
+                    bar: {
+                      ...graph.bar,
+                      tooltip: {
+                        ...graph.bar.tooltip,
+                        borderStyle: e,
+                      },
+                    },
+                  },
+                  setUpdating
+                );
+
+                // setCustomization((prev) => ({
+                //   ...prev,
+                //   tooltip: {
+                //     ...prev.tooltip,
+                //     borderStyle: e,
+                //   },
+                // }));
               }}
             />
           </div>
@@ -406,36 +593,39 @@ const BarChartCustomization = () => {
 
   useEffect(() => {
     // console.log("data>", data);
-    createNumberStringNames(data, customization, setCustomization);
-  }, []);
+  }, [graph.bar]);
 
   useEffect(() => {
+    const { stringNames, numberNames } = createNumberStringNames(
+      data,
+      graph,
+      setGraph
+    );
     const newOptionsXYaxis = [];
+    console.log("graphHere", graph);
     // console.log("customization>", customization);
-    customization?.dataNames.forEach((e) => {
+    stringNames.forEach((e) => {
       newOptionsXYaxis.push({
         label: e,
         value: e,
       });
     });
-
+    console.log("graph?.dataNames", graph?.dataNames);
     setOptionsYaxis(newOptionsXYaxis);
     setOptionsXaxis(newOptionsXYaxis);
     const newOptionsBars = [];
-    customization?.numberNames.forEach((e) => {
+    numberNames.forEach((e) => {
       newOptionsBars.push({
         label: e,
         value: e,
       });
     });
     setOptionsBars(newOptionsBars);
-  }, [customization]);
+  }, [graph.bar]);
 
   return (
     <div>
-      {customization?.dataNames && (
-        <Collapse size="small" items={BarCustomization} />
-      )}
+      {graph?.dataNames && <Collapse size="small" items={BarCustomization} />}
     </div>
   );
 };
