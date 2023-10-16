@@ -1,6 +1,8 @@
 .dashboard {
   min-height: 100vh;
   min-width: 99vw;
+  background-color: whitesmoke;
+  overflow: hidden;
 }
 
 .dashboard .main {
@@ -23,4 +25,6 @@
     rgb(151 150 240 / 40%),
     rgb(251 199 212 / 40%)
   );
+  align-items: baseline;
+  min-height: 88vh;
 }

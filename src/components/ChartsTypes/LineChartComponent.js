@@ -14,9 +14,10 @@ import {
   LineChart,
   Line,
 } from "recharts";
+import { update } from "../Helper/CommonHelper";
 
 const LineChartComponent = () => {
-  const { data, graph, setGraph } = useContext(userContext);
+  const { data, graph, setGraph, setUpdating } = useContext(userContext);
   console.log("graph line", graph);
   let minimum = 0,
     maximum = 0;
@@ -69,20 +70,55 @@ const LineChartComponent = () => {
           height={30}
           onChange={(e) => {
             console.log(e);
+            if (
+              e.startIndex === graph.line?.brush?.startIndex &&
+              e.endIndex === graph.line?.brush?.endIndex
+            )
+              return;
             setGraph((prev) => {
               return {
                 ...prev,
                 line: {
                   ...prev.line,
                   brush: {
-                    ...prev.brush,
+                    ...prev.line.brush,
                     startIndex: e.startIndex,
                     endIndex: e.endIndex,
                   },
                 },
               };
             });
+            update(
+              {
+                ...graph,
+                line: {
+                  ...graph.line,
+                  brush: {
+                    ...graph.line.brush,
+                    startIndex: e.startIndex,
+                    endIndex: e.endIndex,
+                  },
+                },
+              },
+              setUpdating
+            );
           }}
+          // onChange={(e) => {
+          //   console.log(e);
+          //   setGraph((prev) => {
+          //     return {
+          //       ...prev,
+          //       line: {
+          //         ...prev.line,
+          //         brush: {
+          //           ...prev.brush,
+          //           startIndex: e.startIndex,
+          //           endIndex: e.endIndex,
+          //         },
+          //       },
+          //     };
+          //   });
+          // }}
           startIndex={graph.line?.brush?.startIndex}
           endIndex={graph.line?.brush?.endIndex}
           stroke={graph.line?.brush?.stroke}

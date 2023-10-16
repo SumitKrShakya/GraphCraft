@@ -18,6 +18,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import handleCSVInputChange from "./CsvToJson";
 import { useNavigate } from "react-router-dom";
 import userContext from "../context/userContext";
+import { motion } from "framer-motion";
 
 const { Meta } = AntdCard;
 
@@ -28,20 +29,26 @@ const Dashboard = () => {
   const { chartId, setGraph } = useContext(userContext);
   useEffect(() => {
     const call = async () => {
-      const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}/chart/all`,
-        {},
-        {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("jwt"),
-          },
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_SERVER_URL}/chart/all`,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("jwt"),
+            },
+          }
+        );
+        const res = response.data;
+        if (res.success) {
+          setData(res.charts);
+          console.log(res);
+          setLoading(false);
+        } else {
+          console.log("some error ocured");
         }
-      );
-      const res = response.data;
-      if (res.success) {
-        setData(res.charts);
-        console.log(res);
-        setLoading(false);
+      } catch (error) {
+        console.log(error);
       }
     };
     call();
@@ -80,7 +87,13 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard">
+    <motion.div
+      initial={{ opacity: 0.5, scale: 0.98, y: "1vh", borderRadius: "20px" }}
+      animate={{ opacity: 1, scale: 1, y: "0", borderRadius: "0px" }}
+      exit={{ opacity: 0.5, scale: 0.98, y: "1vh", borderRadius: "20px" }}
+      transition={{ duration: 0.3 }}
+      className="dashboard"
+    >
       <Navbar />
       {/* <CustomizationPanel /> */}
       <div className="main">
@@ -148,7 +161,7 @@ const Dashboard = () => {
           </>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

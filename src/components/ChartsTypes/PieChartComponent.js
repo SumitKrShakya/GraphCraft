@@ -14,9 +14,10 @@ import {
   PieChart,
   Pie,
 } from "recharts";
+import { update } from "../Helper/CommonHelper";
 
 const PieChartComponent = () => {
-  const { data, graph, setGraph } = useContext(userContext);
+  const { data, graph, setGraph, setUpdating } = useContext(userContext);
   let minimum = 0,
     maximum = 0;
   graph.pie.pies.map((item) => {
@@ -78,8 +79,29 @@ const PieChartComponent = () => {
         })}
         <Brush
           height={30}
+          // onChange={(e) => {
+          //   console.log(e);
+          //   setGraph((prev) => {
+          //     return {
+          //       ...prev,
+          //       pie: {
+          //         ...prev.pie,
+          //         brush: {
+          //           ...prev.pie.brush,
+          //           startIndex: e.startIndex,
+          //           endIndex: e.endIndex,
+          //         },
+          //       },
+          //     };
+          //   });
+          // }}
           onChange={(e) => {
             console.log(e);
+            if (
+              e.startIndex === graph.pie?.brush?.startIndex &&
+              e.endIndex === graph.pie?.brush?.endIndex
+            )
+              return;
             setGraph((prev) => {
               return {
                 ...prev,
@@ -93,6 +115,20 @@ const PieChartComponent = () => {
                 },
               };
             });
+            update(
+              {
+                ...graph,
+                pie: {
+                  ...graph.pie,
+                  brush: {
+                    ...graph.pie.brush,
+                    startIndex: e.startIndex,
+                    endIndex: e.endIndex,
+                  },
+                },
+              },
+              setUpdating
+            );
           }}
           startIndex={graph.pie?.brush?.startIndex}
           endIndex={graph.pie?.brush?.endIndex}

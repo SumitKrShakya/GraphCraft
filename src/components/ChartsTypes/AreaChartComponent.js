@@ -14,8 +14,9 @@ import {
   AreaChart,
   Area,
 } from "recharts";
+import { update } from "../Helper/CommonHelper";
 const AreaChartComponent = () => {
-  const { data, graph, setGraph } = useContext(userContext);
+  const { data, graph, setGraph, setUpdating } = useContext(userContext);
   let minimum = 0,
     maximum = 0;
   graph.area.areas.map((item) => {
@@ -65,8 +66,29 @@ const AreaChartComponent = () => {
         })}
         <Brush
           height={30}
+          // onChange={(e) => {
+          //   console.log(e);
+          //   setGraph((prev) => {
+          //     return {
+          //       ...prev,
+          //       area: {
+          //         ...prev.area,
+          //         brush: {
+          //           ...prev.area.brush,
+          //           startIndex: e.startIndex,
+          //           endIndex: e.endIndex,
+          //         },
+          //       },
+          //     };
+          //   });
+          // }}
           onChange={(e) => {
             console.log(e);
+            if (
+              e.startIndex === graph.area?.brush?.startIndex &&
+              e.endIndex === graph.area?.brush?.endIndex
+            )
+              return;
             setGraph((prev) => {
               return {
                 ...prev,
@@ -80,6 +102,20 @@ const AreaChartComponent = () => {
                 },
               };
             });
+            update(
+              {
+                ...graph,
+                area: {
+                  ...graph.area,
+                  brush: {
+                    ...graph.area.brush,
+                    startIndex: e.startIndex,
+                    endIndex: e.endIndex,
+                  },
+                },
+              },
+              setUpdating
+            );
           }}
           startIndex={graph.area?.brush?.startIndex}
           endIndex={graph.area?.brush?.endIndex}

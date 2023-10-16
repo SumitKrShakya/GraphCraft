@@ -97,7 +97,7 @@ const AreaChartCustomization = () => {
     }
 
     const updatedArr = value.map((name) => {
-      const existingVendor = graph.area?.area.find(
+      const existingVendor = graph.area?.areas.find(
         (vendor) => vendor.keyName === name
       );
       if (existingVendor) {

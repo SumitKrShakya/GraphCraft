@@ -8,6 +8,7 @@ import {
   ShareAltOutlined,
   FolderOpenOutlined,
 } from "@ant-design/icons";
+import GraphImg from "../images/graph.png";
 const { Meta } = AntdCard;
 
 const Card = ({ chart, graph }) => {
@@ -103,7 +104,7 @@ const Card = ({ chart, graph }) => {
                 boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
               }}
               alt="example"
-              src="https://play-lh.googleusercontent.com/AcmdHoyslp6AnrSMvDMg1o3tmhIuy0wbd8mN-usvDzhO4hiTHMLIavweYOPKmlpglrY"
+              src={GraphImg}
             />
           }
         >

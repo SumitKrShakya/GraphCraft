@@ -1,7 +1,7 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./ChartArea.css";
 import { Button, Input, Popover, QRCode, Select } from "antd";
-import { AiOutlineCopy } from "react-icons/ai";
+import { AiFillEdit, AiOutlineCopy } from "react-icons/ai";
 import {
   BarChart,
   Bar,
@@ -39,8 +39,68 @@ const ChartArea = () => {
   } = useContext(userContext);
 
   const navigate = useNavigate();
-  const printContent = useRef();
-  console.log("graph", graph);
+  const canvasRef = useRef(null);
+  const printContent = useRef(null);
+  // creating a canvas element
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [context, setContext] = useState(null);
+
+  const startDrawing = (e) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "black";
+
+    ctx.beginPath();
+    ctx.moveTo(
+      e.clientX - printContent.current.getBoundingClientRect().left,
+      e.clientY - printContent.current.getBoundingClientRect().top
+    );
+
+    setIsDrawing(true);
+  };
+
+  const draw = (e) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    // canvas.style.backgroundColor = "grey";
+    const ctx = canvas.getContext("2d");
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "black";
+
+    ctx.lineTo(
+      e.clientX - printContent.current.getBoundingClientRect().left,
+      e.clientY - printContent.current.getBoundingClientRect().top
+    );
+    ctx.stroke();
+    setContext(!ctx);
+  };
+
+  const endDrawing = () => {
+    // console.log("context", context);
+    setIsDrawing(false);
+    // context.closePath();
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  useEffect(() => {
+    const height = printContent.current.clientHeight;
+    const width = printContent.current.clientWidth;
+    if (!canvasRef) return;
+    canvasRef.current.style.height = height;
+    canvasRef.current.style.width = width;
+  }, [graph.chartType]);
+
   return (
     <div
       className="chartarea"
@@ -154,6 +214,16 @@ const ChartArea = () => {
             return printContent.current;
           }}
         />
+        {/* <Button
+          type={editingStatus ? "primary" : "default"}
+          onClick={(e) => {
+            setEditingStatus(!editingStatus);
+          }}
+          className="printBtn"
+        >
+          <AiFillEdit style={{ fontSize: "1.3rem" }} />
+        </Button> */}
+
         <Popover
           placement="bottomRight"
           overlayInnerStyle={{
@@ -200,20 +270,42 @@ const ChartArea = () => {
           <Button className="shareBtn">Share</Button>
         </Popover>
       </div>
-      <div ref={printContent} className="chart">
-        {data && (
-          <>
-            {graph.chartType === "bar" ? (
-              <BarChartComponent />
-            ) : graph.chartType === "line" ? (
-              <LineChartComponent />
-            ) : graph.chartType === "area" ? (
-              <AreaChartComponent />
-            ) : graph.chartType === "pie" ? (
-              <PieChartComponent />
-            ) : null}
-          </>
-        )}
+      <div className="chart" ref={printContent}>
+        <div>
+          {data && (
+            <>
+              {graph.chartType === "bar" ? (
+                <BarChartComponent />
+              ) : graph.chartType === "line" ? (
+                <LineChartComponent />
+              ) : graph.chartType === "area" ? (
+                <AreaChartComponent />
+              ) : graph.chartType === "pie" ? (
+                <PieChartComponent />
+              ) : null}
+            </>
+          )}
+        </div>
+        <canvas
+          height={printContent.current ? printContent.current.clientHeight : 0}
+          width={printContent.current ? printContent.current.clientWidth : 0}
+          className="canvas"
+          id="myCanvas"
+          ref={canvasRef}
+          onMouseDown={startDrawing}
+          onMouseMove={draw}
+          onMouseUp={endDrawing}
+          onMouseLeave={endDrawing}
+          style={{
+            pointerEvents: editingStatus ? "auto" : "none",
+            border: editingStatus ? "2px solid darkgoldenrod" : "none",
+            boxShadow: editingStatus
+              ? "0px 0px 10px 0px darkgoldenrod"
+              : "none",
+          }}
+        >
+          hello
+        </canvas>
       </div>
     </div>
   );

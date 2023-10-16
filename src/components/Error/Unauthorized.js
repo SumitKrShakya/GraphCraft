@@ -11,6 +11,7 @@ const Unauthorized = () => {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
+        color: "white",
       }}
     >
       <h1 style={{ fontSize: "10rem", fontWeight: 200 }}>Oops!</h1>

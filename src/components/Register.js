@@ -4,6 +4,7 @@ import "./Login.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const Register = () => {
     const res = (await response).data;
     if (res.success) {
       localStorage.setItem("jwt", res.token);
+      localStorage.setItem("username", res.user.username);
       navigate("/dashboard");
     } else {
       window.alert(res.message);
@@ -31,7 +33,12 @@ const Register = () => {
   console.log(details);
   return (
     <div className="body">
-      <div className="box">
+      <motion.div
+        initial={{ opacity: 0, y: "1vh", scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: "-1vh", scale: 0.98 }}
+        className="box"
+      >
         <img className="logo" src={Logo} />
         <div className="inputbox">
           <label for="username">Username</label>
@@ -106,7 +113,7 @@ const Register = () => {
             Sign in →
           </Link>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

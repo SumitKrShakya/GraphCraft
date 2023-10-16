@@ -6,6 +6,7 @@ import "./ChartPage.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import userContext from "../context/userContext";
+import { motion } from "framer-motion";
 
 const ChartPage = () => {
   const navigator = useNavigate();
@@ -40,6 +41,10 @@ const ChartPage = () => {
         //     chartId: id,
         //   };
         // });
+        console.log("response", response.data);
+        if (!response.data.success) {
+          navigator("/unauthorized");
+        }
 
         const newData = response.data.chart.data.map((item) => {
           let newItem = {};
@@ -152,6 +157,9 @@ const ChartPage = () => {
         setFirstLoading(false);
       } catch (error) {
         console.log(error);
+        if (!error?.response?.data?.success) {
+          navigator("/unauthorized");
+        }
         if (error?.response?.data?.message === "Please login first") {
           navigator("/unauthorized");
         }
@@ -161,7 +169,13 @@ const ChartPage = () => {
   }, []);
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0.5, scale: 0.98, y: "1vh", borderRadius: "20px" }}
+      animate={{ opacity: 1, scale: 1, y: "0", borderRadius: "0px" }}
+      exit={{ opacity: 0.5, scale: 0.98, y: "1vh", borderRadius: "20px" }}
+      transition={{ duration: 0.3 }}
+      style={{ backgroundColor: "white" }}
+    >
       <Navbar />
       <div className="page">
         {firstLoading ? (
@@ -177,7 +191,7 @@ const ChartPage = () => {
           </>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
