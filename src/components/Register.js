@@ -5,9 +5,11 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { message } from "antd";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
   const [details, setDetails] = useState({
     username: "",
     email: "",
@@ -15,24 +17,39 @@ const Register = () => {
   });
 
   const handleRegister = async () => {
-    const response = axios.post(
-      `${process.env.REACT_APP_SERVER_URL}/user/register`,
-      details
-    );
-    const res = (await response).data;
-    if (res.success) {
-      localStorage.setItem("jwt", res.token);
-      localStorage.setItem("username", res.user.username);
-      navigate("/dashboard");
-    } else {
-      window.alert(res.message);
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/user/register`,
+        details
+      );
+      const res = response.data;
+      if (res.success) {
+        localStorage.setItem("jwt", res.token);
+        localStorage.setItem("username", res.newUser.username);
+        messageApi.open({
+          type: "success",
+          content: "Successfully registered!",
+          duration: 3,
+        });
+        navigate("/dashboard");
+        messageApi.open({
+          type: "success",
+          content: `Welcome ${res.newUser.username}!`,
+          duration: 3,
+        });
+      } else {
+        window.alert(res.message);
+      }
+    } catch (error) {
+      console.log(error);
+      messageApi.error(`${error.response.data.message}`);
     }
-    console.log(response.data);
   };
 
   console.log(details);
   return (
     <div className="body">
+      {contextHolder}
       <motion.div
         initial={{ opacity: 0, y: "1vh", scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
